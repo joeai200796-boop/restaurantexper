@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نار & توابل | Nar & Tawabel </title>
+<title>Nar & Spice | نار & توابل</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -155,6 +155,28 @@
   @keyframes bump{ 0%{transform:scale(1)} 40%{transform:scale(1.5)} 100%{transform:scale(1)} }
 
   .burger-toggle{display:none; background:none; border:none; color:var(--cream); font-size:1.5rem;}
+
+  /* ===== إخفاء هيدر الموبايل (Menu ✕) من على الكمبيوتر تماماً ===== */
+  .nav-head-mobile {
+    display: none !important;
+  }
+
+  /* ===== خلفية البلور المظللة ورا القائمة (ضبابية قوية جداً) ===== */
+  .nav-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(15, 10, 8, 0.85) !important; /* لون أسود دافئ غامق جداً يعزل الموقع */
+    backdrop-filter: blur(15px) !important; /* بلور قوي جداً للخلفية */
+    -webkit-backdrop-filter: blur(15px) !important;
+    z-index: 20 !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease !important;
+  }
+  .nav-overlay.show {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
 
   /* ============ HERO ============ */
   .hero{
@@ -414,10 +436,41 @@
   .footer-col ul{list-style:none; display:flex; flex-direction:column; gap:11px;}
   .footer-col a{font-size:0.9rem; color:var(--cream-dim); transition:color .2s;}
   .footer-col a:hover{color:var(--spice);}
-  .footer-bottom{
-    border-top:1px solid var(--line); padding-top:24px;
-    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
-    font-size:0.82rem; color:var(--cream-dim);
+ /* ===== تظبيط شريط الفوتر التحتاني ===== */
+  .footer-bottom {
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between; /* بتوزع الـ 3 جمل جمب بعض بمسافات متساوية */
+    align-items: center;
+    flex-wrap: wrap; /* عشان لو الشاشة صغرت في الموبايل ينزلوا تحت بعض بنظام */
+    gap: 15px;
+    font-size: 0.82rem;
+    color: var(--cream-dim);
+  }
+
+  /* ===== تنسيق لينك Joe Advertise ===== */
+  .dev-credit a {
+    color: var(--ember);
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s, text-shadow 0.2s;
+  }
+  
+  .dev-credit a:hover {
+    color: var(--spice);
+    text-shadow: 0 0 10px rgba(242, 181, 68, 0.4);
+  }
+
+  /* تظبيط في الشاشات الصغيرة (الموبايل) عشان يجوا في النص */
+  @media (max-width: 760px) {
+    .footer-bottom {
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      gap: 10px;
+    }
   }
 
   /* ============ CART DRAWER ============ */
@@ -576,26 +629,118 @@
     .footer-grid{grid-template-columns:1fr 1fr;}
   }
 
-  @media (max-width: 760px){
-    .nav-links{
-      position:fixed; top:73px; inset-inline:0; bottom:0;
-      background:var(--bg); flex-direction:column; padding:30px 28px;
-      transform:translateY(-130%); transition:transform .3s; z-index:60;
-      gap:8px; align-items:flex-start;
-    }
-    .nav-links.open{transform:translateY(0);}
-    .nav-links a{font-size:1.2rem; padding:12px 0; width:100%; border-bottom:1px solid var(--line);}
-    .burger-toggle{display:block;}
-    .menu-grid{grid-template-columns:1fr 1fr;}
-    .footer-grid{grid-template-columns:1fr;}
-    .cart-drawer{width:100%;}
-  }
+  /* ============ MOBILE RESPONSIVE & NAV DRAWER ============ */
+  @media (max-width: 760px) {
+    /* إظهار زرار القائمة (☰) في الهيدر */
+    .burger-toggle { display: block !important; }
 
-  @media (max-width: 540px){
-    .menu-grid{grid-template-columns:1fr;}
-    .hero-stats{gap:22px;}
-    .spice-strip-inner{justify-content:flex-start;}
-    .container{padding:0 18px;}
+    /* إظهار هيدر القائمة الجانبية (الكلمة وزرار ✕) في الموبايل بس */
+    .nav-head-mobile {
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-head-mobile span {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--cream);
+    }
+    .nav-close-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      color: var(--cream);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-close-btn:hover {
+      background: var(--ember);
+      border-color: var(--ember);
+      color: #fff;
+    }
+
+    /* صندوق القائمة الجانبية (Drawer) بخلفية تقيلة معزولة تماماً */
+    .nav-links {
+      position: fixed !important;
+      top: 0 !important;
+      bottom: 0 !important;
+      width: 285px !important;
+      max-width: 85vw !important;
+      background: rgb(24, 18, 14) !important; /* لون خلفية صلب وغامق يعزل عن اللي تحتها */
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9) !important;
+      z-index: 999 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 24px !important;
+      gap: 12px !important;
+      transition: transform 0.38s cubic-bezier(.22,.9,.3,1) !important;
+    }
+
+    /* تظبيط اتجاه الفتح حسب اللغة (عربي / إنجليزي) */
+    [dir="rtl"] .nav-links {
+      right: 0 !important;
+      left: auto !important;
+      transform: translateX(110%) !important;
+      border-left: 1px solid var(--line) !important;
+    }
+    [dir="ltr"] .nav-links {
+      left: 0 !important;
+      right: auto !important;
+      transform: translateX(-110%) !important;
+      border-right: 1px solid var(--line) !important;
+    }
+
+    /* حركة الفتح */
+    .nav-links.open { transform: translateX(0) !important; }
+
+    /* شكل أزرار الروابط (الكروت) داخل القائمة */
+    .nav-links li { width: 100%; }
+    .nav-links li:not(.nav-head-mobile) a {
+      display: block;
+      width: 100%;
+      padding: 13px 16px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--cream-dim);
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+    .nav-links li:not(.nav-head-mobile) a:hover {
+      background: var(--ember);
+      color: #fff;
+      border-color: var(--ember);
+      transform: translateX(-4px);
+    }
+    [dir="ltr"] .nav-links li:not(.nav-head-mobile) a:hover { transform: translateX(4px); }
+    .nav-links a::after { display: none !important; }
+
+    /* تظبيط باقي الشبكة في الموبايل */
+    .menu-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .cart-drawer { width: 100%; }
+  }
+  /* ===== استايل حقوق المطور في الفوتر ===== */
+  .dev-credit a {
+    color: var(--ember);
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s, text-shadow 0.2s;
+  }
+  .dev-credit a:hover {
+    color: var(--spice);
+    text-shadow: 0 0 10px rgba(242, 181, 68, 0.4);
   }
 </style>
 </head>
@@ -609,21 +754,24 @@
     <div class="brand">
       <div class="flame">🔥</div>
       <div>
-        <span data-ar="نار & توابل" data-en="Nar & Spice">نار &amp; توابل</span>
-        <small data-ar="فرايد تشكن" data-en="FRIED CHICKEN HOUSE">فرايد تشكن</small>
+        <span data-ar="نار & توابل" data-en="Nar & Spice">Nar & Spice</span>
+        <small data-ar="فرايد تشكن" data-en="FRIED CHICKEN HOUSE">FRIED CHICKEN HOUSE</small>
       </div>
     </div>
-
     <ul class="nav-links" id="navLinks">
-      <li><a href="#home" data-ar="الرئيسية" data-en="Home">الرئيسية</a></li>
-      <li><a href="#menu" data-ar="القائمة" data-en="Menu">القائمة</a></li>
-      <li><a href="#about" data-ar="من نحن" data-en="About">من نحن</a></li>
-      <li><a href="#contact" data-ar="تواصل معنا" data-en="Contact">تواصل معنا</a></li>
+      <li class="nav-head-mobile">
+        <span data-ar="الأقـــســـام" data-en="Explore">Menu</span>
+        <button class="nav-close-btn" id="navCloseBtn" aria-label="Close menu">✕</button>
+      </li>
+      <li><a href="#home" data-ar="الرئيسية" data-en="Home">Home</a></li>
+      <li><a href="#menu" data-ar="القائمة" data-en="Menu">Menu</a></li>
+      <li><a href="#about" data-ar="من نحن" data-en="About">About</a></li>
+      <li><a href="#contact" data-ar="تواصل معنا" data-en="Contact">Contact</a></li>
     </ul>
 
     <div class="nav-right">
       <button class="lang-toggle" id="langToggle" aria-label="Switch language">
-        <span id="langToggleText">EN</span>
+        <span id="langToggleText">ع</span>
       </button>
       <button class="cart-btn" id="cartOpenBtn" aria-label="Open cart">
         🛒
@@ -632,44 +780,44 @@
       <button class="burger-toggle" id="burgerToggle" aria-label="Menu">☰</button>
     </div>
   </nav>
-</header>
+</header> <div class="nav-overlay" id="navOverlay"></div>
 
 <!-- ===================== HERO ===================== -->
 <section class="hero" id="home">
   <div class="container hero-grid">
     <div>
       <div class="eyebrow"><span class="dot"></span>
-        <span data-ar="مشوي بالنار، متبّل بالحب" data-en="Fired up daily, seasoned with love">مشوي بالنار، متبّل بالحب</span>
+        <span data-ar="مشوي بالنار، متبّل بالحب" data-en="Fired up daily, seasoned with love">Fired up daily, seasoned with love</span>
       </div>
       <h1 class="hero-title">
-        <span data-ar="تشكن" data-en="Chicken">تشكن</span>
-        <span class="accent" data-ar="مقرمش" data-en="so crispy">مقرمش</span>
+        <span data-ar="تشكن" data-en="Chicken">Chicken</span>
+        <span class="accent" data-ar="مقرمش" data-en="so crispy">so crispy</span>
         <br>
-        <span class="stroke" data-ar="من النار" data-en="it crackles">من النار</span>
-        <span data-ar="لطبقك" data-en="on the first bite">لطبقك
-      </span></h1>
+        <span class="stroke" data-ar="من النار" data-en="it crackles">it crackles</span>
+        <span data-ar="لطبقك" data-en="on the first bite">on the first bite</span>
+      </h1>
       <p class="hero-sub" data-ar="نقع كل قطعة 24 ساعة في تتبيلتنا السرية، نقليها لحد ما تبقى دهب، وبنوصلهالك سخنة في أقل من 30 دقيقة."
          data-en="Every piece brined for 24 hours in our secret spice blend, fried golden, and delivered to your door in under 30 minutes.">
-        نقع كل قطعة 24 ساعة في تتبيلتنا السرية، نقليها لحد ما تبقى دهب، وبنوصلهالك سخنة في أقل من 30 دقيقة.
+        Every piece brined for 24 hours in our secret spice blend, fried golden, and delivered to your door in under 30 minutes.
       </p>
       <div class="hero-cta">
         <a href="#menu" class="btn btn-primary">
-          <span data-ar="اطلب دلوقتي" data-en="Order Now">اطلب دلوقتي</span> 🔥
+          <span data-ar="اطلب دلوقتي" data-en="Order Now">Order Now</span> 🔥
         </a>
-        <a href="#about" class="btn btn-ghost" data-ar="تعرف علينا" data-en="Our Story">تعرف علينا</a>
+        <a href="#about" class="btn btn-ghost" data-ar="تعرف علينا" data-en="Our Story">Our Story</a>
       </div>
       <div class="hero-stats">
         <div class="hero-stat">
           <b>24h</b>
-          <span data-ar="تتبيلة طازة" data-en="Fresh brine">تتبيلة طازة</span>
+          <span data-ar="تتبيلة طازة" data-en="Fresh brine">Fresh brine</span>
         </div>
         <div class="hero-stat">
-          <b>30<span data-ar="د" data-en="min">د</span></b>
-          <span data-ar="متوسط التوصيل" data-en="Avg. delivery">متوسط التوصيل</span>
+          <b>30<span data-ar="د" data-en="min">min</span></b>
+          <span data-ar="متوسط التوصيل" data-en="Avg. delivery">Avg. delivery</span>
         </div>
         <div class="hero-stat">
           <b>4.9★</b>
-          <span data-ar="تقييم العملاء" data-en="Customer rating">تقييم العملاء</span>
+          <span data-ar="تقييم العملاء" data-en="Customer rating">Customer rating</span>
         </div>
       </div>
     </div>
@@ -680,8 +828,8 @@
       <div class="hero-img-wrap">
         <img id="heroImg" alt="Crispy fried chicken burger" src="">
       </div>
-      <div class="floating-badge b1">🌶️ <span data-ar="حار جداً" data-en="Extra Hot">حار جداً</span></div>
-      <div class="floating-badge b2">⭐ <span data-ar="الأكثر طلباً" data-en="Best Seller">الأكثر طلباً</span></div>
+      <div class="floating-badge b1">🌶️ <span data-ar="حار جداً" data-en="Extra Hot">Extra Hot</span></div>
+      <div class="floating-badge b2">⭐ <span data-ar="الأكثر طلباً" data-en="Best Seller">Best Seller</span></div>
     </div>
   </div>
 </section>
@@ -689,12 +837,12 @@
 <!-- ===================== SPICE STRIP (signature element) ===================== -->
 <div class="spice-strip">
   <div class="container spice-strip-inner">
-    <span class="spice-strip-label" data-ar="🌡️ دليل درجة الحرارة في القائمة" data-en="🌡️ Heat guide used across our menu">🌡️ دليل درجة الحرارة في القائمة</span>
+    <span class="spice-strip-label" data-ar="🌡️ دليل درجة الحرارة في القائمة" data-en="🌡️ Heat guide used across our menu">🌡️ Heat guide used across our menu</span>
     <div class="spice-levels">
-      <div class="spice-pill l1"><span class="flames">🌶️<span>🌶️</span><span>🌶️</span><span>🌶️</span></span> <span data-ar="هادي" data-en="Mild">هادي</span></div>
-      <div class="spice-pill l2"><span class="flames"><span class="on">🌶️</span><span class="on">🌶️</span>🌶️🌶️</span> <span data-ar="متوسط" data-en="Medium">متوسط</span></div>
-      <div class="spice-pill l3"><span class="flames"><span class="on">🌶️</span><span class="on">🌶️</span><span class="on">🌶️</span>🌶️</span> <span data-ar="حار" data-en="Hot">حار</span></div>
-      <div class="spice-pill l4"><span class="flames"><span class="on">🌶️</span><span class="on">🌶️</span><span class="on">🌶️</span><span class="on">🌶️</span></span> <span data-ar="نار" data-en="Fire">نار</span></div>
+      <div class="spice-pill l1"><span class="flames">🌶️<span>🌶️</span><span>🌶️</span><span>🌶️</span></span> <span data-ar="هادي" data-en="Mild">Mild</span></div>
+      <div class="spice-pill l2"><span class="flames"><span class="on">🌶️</span><span class="on">🌶️</span>🌶️🌶️</span> <span data-ar="متوسط" data-en="Medium">Medium</span></div>
+      <div class="spice-pill l3"><span class="flames"><span class="on">🌶️</span><span class="on">🌶️</span><span class="on">🌶️</span>🌶️</span> <span data-ar="حار" data-en="Hot">Hot</span></div>
+      <div class="spice-pill l4"><span class="flames"><span class="on">🌶️</span><span class="on">🌶️</span><span class="on">🌶️</span><span class="on">🌶️</span></span> <span data-ar="نار" data-en="Fire">Fire</span></div>
     </div>
   </div>
 </div>
@@ -704,18 +852,18 @@
   <div class="container">
     <div class="section-head">
       <div>
-        <div class="eyebrow"><span class="dot"></span><span data-ar="القائمة" data-en="The Menu">القائمة</span></div>
-        <h2 class="section-title" data-ar="اختار وجبتك" data-en="Build your order">اختار وجبتك</h2>
+        <div class="eyebrow"><span class="dot"></span><span data-ar="القائمة" data-en="The Menu">The Menu</span></div>
+        <h2 class="section-title" data-ar="اختار وجبتك" data-en="Build your order">Build your order</h2>
       </div>
-      <p class="section-desc" data-ar="من البرجر للوجبات العائلية، كل حاجة بتتقلى فريش وقت ما تطلب." data-en="From burgers to family buckets — everything is fried fresh the moment you order.">من البرجر للوجبات العائلية، كل حاجة بتتقلى فريش وقت ما تطلب.</p>
+      <p class="section-desc" data-ar="من البرجر للوجبات العائلية، كل حاجة بتتقلى فريش وقت ما تطلب." data-en="From burgers to family buckets — everything is fried fresh the moment you order.">From burgers to family buckets — everything is fried fresh the moment you order.</p>
     </div>
 
     <div class="menu-tabs" id="menuTabs">
-      <button class="menu-tab active" data-cat="all" data-ar="الكل" data-en="All">الكل</button>
-      <button class="menu-tab" data-cat="burgers" data-ar="برجر" data-en="Burgers">برجر</button>
-      <button class="menu-tab" data-cat="buckets" data-ar="وجبات" data-en="Buckets">وجبات</button>
-      <button class="menu-tab" data-cat="sides" data-ar="إضافات" data-en="Sides">إضافات</button>
-      <button class="menu-tab" data-cat="drinks" data-ar="مشروبات" data-en="Drinks">مشروبات</button>
+      <button class="menu-tab active" data-cat="all" data-ar="الكل" data-en="All">All</button>
+      <button class="menu-tab" data-cat="burgers" data-ar="برجر" data-en="Burgers">Burgers</button>
+      <button class="menu-tab" data-cat="buckets" data-ar="وجبات" data-en="Buckets">Buckets</button>
+      <button class="menu-tab" data-cat="sides" data-ar="إضافات" data-en="Sides">Sides</button>
+      <button class="menu-tab" data-cat="drinks" data-ar="مشروبات" data-en="Drinks">Drinks</button>
     </div>
 
     <div class="menu-grid" id="menuGrid"></div>
@@ -729,21 +877,21 @@
       <img id="aboutImg" alt="Restaurant kitchen" src="">
     </div>
     <div class="about-text">
-      <div class="eyebrow"><span class="dot"></span><span data-ar="حكايتنا" data-en="Our Story">حكايتنا</span></div>
-      <h2 class="section-title" style="margin-bottom:20px;" data-ar="بدأنا بمقلاة واحدة وحلم كبير" data-en="We started with one fryer and a big dream">بدأنا بمقلاة واحدة وحلم كبير</h2>
+      <div class="eyebrow"><span class="dot"></span><span data-ar="حكايتنا" data-en="Our Story">Our Story</span></div>
+      <h2 class="section-title" style="margin-bottom:20px;" data-ar="بدأنا بمقلاة واحدة وحلم كبير" data-en="We started with one fryer and a big dream">We started with one fryer and a big dream</h2>
       <p data-ar="من سنة 2018، بدأنا في مطبخ صغير بوصفة جدتنا للتتبيلة. النهاردة بقينا أكتر من مطعم — إحنا تجربة. كل قطعة دجاج بتتقلى بعناية، وكل صوص بيتعمل يومياً في المطبخ."
          data-en="Since 2018, we started in a tiny kitchen with grandma's spice recipe. Today we're more than a restaurant — we're an experience. Every piece of chicken is fried with care, every sauce made fresh daily in-house.">
-        من سنة 2018، بدأنا في مطبخ صغير بوصفة جدتنا للتتبيلة. النهاردة بقينا أكتر من مطعم — إحنا تجربة. كل قطعة دجاج بتتقلى بعناية، وكل صوص بيتعمل يومياً في المطبخ.
+        Since 2018, we started in a tiny kitchen with grandma's spice recipe. Today we're more than a restaurant — we're an experience. Every piece of chicken is fried with care, every sauce made fresh daily in-house.
       </p>
       <p data-ar="مفيش حاجة مجمدة، مفيش اختصارات. بس زيت نظيف، تتبيلة سرية، ونار صح."
          data-en="No frozen shortcuts, ever. Just clean oil, secret spice, and the right amount of fire.">
-        مفيش حاجة مجمدة، مفيش اختصارات. بس زيت نظيف، تتبيلة سرية، ونار صح.
+        No frozen shortcuts, ever. Just clean oil, secret spice, and the right amount of fire.
       </p>
       <div class="about-stats">
-        <div class="stat-box"><b>7+</b><span data-ar="سنين خبرة" data-en="Years of fire">سنين خبرة</span></div>
-        <div class="stat-box"><b>50K+</b><span data-ar="طبق اتقدم" data-en="Plates served">طبق اتقدم</span></div>
-        <div class="stat-box"><b>12</b><span data-ar="فرع" data-en="Locations">فرع</span></div>
-        <div class="stat-box"><b>100%</b><span data-ar="طازة يومياً" data-en="Fresh daily">طازة يومياً</span></div>
+        <div class="stat-box"><b>7+</b><span data-ar="سنين خبرة" data-en="Years of fire">Years of fire</span></div>
+        <div class="stat-box"><b>50K+</b><span data-ar="طبق اتقدم" data-en="Plates served">Plates served</span></div>
+        <div class="stat-box"><b>12</b><span data-ar="فرع" data-en="Locations">Locations</span></div>
+        <div class="stat-box"><b>100%</b><span data-ar="طازة يومياً" data-en="Fresh daily">Fresh daily</span></div>
       </div>
     </div>
   </div>
@@ -754,51 +902,51 @@
   <div class="container">
     <div class="section-head">
       <div>
-        <div class="eyebrow"><span class="dot"></span><span data-ar="تواصل" data-en="Get in touch">تواصل</span></div>
-        <h2 class="section-title" data-ar="عندك سؤال؟ احنا هنا" data-en="Questions? We've got you">عندك سؤال؟ احنا هنا</h2>
+        <div class="eyebrow"><span class="dot"></span><span data-ar="تواصل" data-en="Get in touch">Get in touch</span></div>
+        <h2 class="section-title" data-ar="عندك سؤال؟ احنا هنا" data-en="Questions? We've got you">Questions? We've got you</h2>
       </div>
     </div>
 
     <div class="contact-wrap">
       <div class="contact-card">
-        <h3 style="font-size:1.2rem; font-weight:800; margin-bottom:4px;" data-ar="بيانات التواصل" data-en="Contact details">بيانات التواصل</h3>
+        <h3 style="font-size:1.2rem; font-weight:800; margin-bottom:4px;" data-ar="بيانات التواصل" data-en="Contact details">Contact details</h3>
         <ul class="contact-list">
           <li>
             <div class="contact-ico">📍</div>
-            <div><b data-ar="العنوان" data-en="Address">العنوان</b><span data-ar="١٢ شارع النيل، المعادي، القاهرة" data-en="12 Nile St, Maadi, Cairo">١٢ شارع النيل، المعادي، القاهرة</span></div>
+            <div><b data-ar="العنوان" data-en="Address">Address</b><span data-ar="القــــــــاهــــرة" data-en="C A I R O">C A I R O</span></div>
           </li>
           <li>
             <div class="contact-ico">📞</div>
-            <div><b data-ar="اتصل بينا" data-en="Call us">اتصل بينا</b><span>+20 100 123 4567</span></div>
+            <div><b data-ar="اتصل بينا" data-en="Call us">Call us</b><span>+20 103 541 9531</span></div>
           </li>
           <li>
             <div class="contact-ico">⏰</div>
-            <div><b data-ar="مواعيد العمل" data-en="Hours">مواعيد العمل</b><span data-ar="يومياً ١٢ ظهراً – ٢ فجراً" data-en="Daily 12 PM – 2 AM">يومياً ١٢ ظهراً – ٢ فجراً</span></div>
+            <div><b data-ar="مواعيد العمل" data-en="Hours">Hours</b><span data-ar="يومياً ١٢ ظهراً – ٢ فجراً" data-en="Daily 12 PM – 2 AM">Daily 12 PM – 2 AM</span></div>
           </li>
           <li>
             <div class="contact-ico">✉️</div>
-            <div><b data-ar="إيميل" data-en="Email">إيميل</b><span>hello@narwtawabel.com</span></div>
+            <div><b data-ar="إيميل" data-en="Email">Email</b><span>hello@narwtawabel.com</span></div>
           </li>
         </ul>
       </div>
 
       <div class="contact-card">
-        <h3 style="font-size:1.2rem; font-weight:800; margin-bottom:18px;" data-ar="ابعتلنا رسالة" data-en="Send a message">ابعتلنا رسالة</h3>
+        <h3 style="font-size:1.2rem; font-weight:800; margin-bottom:18px;" data-ar="ابعتلنا رسالة" data-en="Send a message">Send a message</h3>
         <form id="contactForm" onsubmit="return false;">
           <div class="form-group">
-            <label data-ar="الاسم" data-en="Name">الاسم</label>
+            <label data-ar="الاسم" data-en="Name">Name</label>
             <input type="text" required placeholder="..." />
           </div>
           <div class="form-group">
-            <label data-ar="رقم الموبايل" data-en="Phone">رقم الموبايل</label>
+            <label data-ar="رقم الموبايل" data-en="Phone">Phone</label>
             <input type="tel" required placeholder="01xxxxxxxxx" />
           </div>
           <div class="form-group">
-            <label data-ar="الرسالة" data-en="Message">الرسالة</label>
+            <label data-ar="الرسالة" data-en="Message">Message</label>
             <textarea required placeholder="..."></textarea>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="contactSubmitBtn">
-            <span data-ar="إرسال" data-en="Send">إرسال</span>
+            <span data-ar="إرسال" data-en="Send">Send</span>
           </button>
         </form>
       </div>
@@ -814,22 +962,23 @@
         <div class="brand">
           <div class="flame">🔥</div>
           <div>
-            <span data-ar="نار & توابل" data-en="Nar & Spice">نار &amp; توابل</span>
+            <span data-ar="نار & توابل" data-en="Nar & Spice">Nar & Spice</span>
+ 
           </div>
         </div>
-        <p data-ar="مطعم فرايد تشكن بطعم مختلف. كل قطعة بتحكي حكاية نار وتوابل." data-en="A fried chicken joint with a different story. Every piece tells a tale of fire and spice.">مطعم فرايد تشكن بطعم مختلف. كل قطعة بتحكي حكاية نار وتوابل.</p>
+        <p data-ar="مطعم فرايد تشكن بطعم مختلف. كل قطعة بتحكي حكاية نار وتوابل." data-en="A fried chicken joint with a different story. Every piece tells a tale of fire and spice.">A fried chicken joint with a different story. Every piece tells a tale of fire and spice.</p>
       </div>
       <div class="footer-col">
-        <h4 data-ar="روابط" data-en="Links">روابط</h4>
+        <h4 data-ar="روابط" data-en="Links">Links</h4>
         <ul>
-          <li><a href="#home" data-ar="الرئيسية" data-en="Home">الرئيسية</a></li>
-          <li><a href="#menu" data-ar="القائمة" data-en="Menu">القائمة</a></li>
-          <li><a href="#about" data-ar="من نحن" data-en="About">من نحن</a></li>
-          <li><a href="#contact" data-ar="تواصل" data-en="Contact">تواصل</a></li>
+          <li><a href="#home" data-ar="الرئيسية" data-en="Home">Home</a></li>
+          <li><a href="#menu" data-ar="القائمة" data-en="Menu">Menu</a></li>
+          <li><a href="#about" data-ar="من نحن" data-en="About">About</a></li>
+          <li><a href="#contact" data-ar="تواصل" data-en="Contact">Contact</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h4 data-ar="تابعنا" data-en="Follow">تابعنا</h4>
+        <h4 data-ar="تابعنا" data-en="Follow">Follow</h4>
         <ul>
           <li><a href="#">Instagram</a></li>
           <li><a href="#">Facebook</a></li>
@@ -837,9 +986,16 @@
         </ul>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span data-ar="© 2026 نار & توابل. جميع الحقوق محفوظة." data-en="© 2026 Nar & Spice. All rights reserved.">© 2026 نار &amp; توابل. جميع الحقوق محفوظة.</span>
-      <span data-ar="صُنع بشغف وفلفل حار 🌶️" data-en="Made with passion & hot pepper 🌶️">صُنع بشغف وفلفل حار 🌶️</span>
+               <div class="footer-bottom">
+      <span data-ar="© 2026 نار & توابل. جميع الحقوق محفوظة." data-en="© 2026 Nar & Spice. All rights reserved.">© 2026 Nar & Spice. All rights reserved.</span>
+      
+      <!-- 👈 السطر الجديد اللي هنضيفه هنا -->
+      <span class="dev-credit">
+        <span data-ar="تم تطوير الموقع بواسطة" data-en="Developed by">Developed by</span>
+        <a href="https://joeadvertiseeg.vercel.app/" target="_blank" rel="noopener noreferrer">Joe Advertise</a>
+      </span>
+
+      <span data-ar="صُنع بشغف وفلفل حار 🌶️" data-en="Made with passion & hot pepper 🌶️">Made with passion & hot pepper 🌶️</span>
     </div>
   </div>
 </footer>
@@ -848,16 +1004,16 @@
 <div class="overlay" id="overlay"></div>
 <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart">
   <div class="cart-head">
-    <h3 data-ar="سلتك" data-en="Your cart">سلتك</h3>
+    <h3 data-ar="سلتك" data-en="Your cart">Your cart</h3>
     <button class="cart-close" id="cartCloseBtn" aria-label="Close cart">✕</button>
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-summary">
-    <div class="summary-row"><span data-ar="المجموع الفرعي" data-en="Subtotal">المجموع الفرعي</span><span id="subtotalVal">0 ج.م</span></div>
-    <div class="summary-row"><span data-ar="التوصيل" data-en="Delivery">التوصيل</span><span id="deliveryVal">0 ج.م</span></div>
-    <div class="summary-row total"><span data-ar="الإجمالي" data-en="Total">الإجمالي</span><span id="totalVal">0 ج.م</span></div>
+    <div class="summary-row"><span data-ar="المجموع الفرعي" data-en="Subtotal">Subtotal</span><span id="subtotalVal">0 EGP</span></div>
+    <div class="summary-row"><span data-ar="التوصيل" data-en="Delivery">Delivery</span><span id="deliveryVal">0 EGP</span></div>
+    <div class="summary-row total"><span data-ar="الإجمالي" data-en="Total">Total</span><span id="totalVal">0 EGP</span></div>
     <button class="checkout-btn" id="checkoutBtn" disabled>
-      <span data-ar="إتمام الطلب" data-en="Checkout">إتمام الطلب</span> →
+      <span data-ar="إتمام الطلب" data-en="Checkout">Checkout</span> →
     </button>
   </div>
 </aside>
@@ -868,45 +1024,45 @@
     <button class="modal-close" id="modalCloseBtn">✕</button>
 
     <div id="checkoutFormView">
-      <h3 data-ar="إتمام الطلب" data-en="Checkout">إتمام الطلب</h3>
-      <p class="modal-sub" data-ar="هنحتاج بياناتك عشان نوصلك الطلب" data-en="We just need a few details to get your order moving">هنحتاج بياناتك عشان نوصلك الطلب</p>
+      <h3 data-ar="إتمام الطلب" data-en="Checkout">Checkout</h3>
+      <p class="modal-sub" data-ar="هنحتاج بياناتك عشان نوصلك الطلب" data-en="We just need a few details to get your order moving">We just need a few details to get your order moving</p>
 
       <div class="form-group">
-        <label data-ar="الاسم بالكامل" data-en="Full name">الاسم بالكامل</label>
+        <label data-ar="الاسم بالكامل" data-en="Full name">Full name</label>
         <input type="text" id="custName" placeholder="..." />
       </div>
       <div class="form-group">
-        <label data-ar="رقم الموبايل" data-en="Phone number">رقم الموبايل</label>
+        <label data-ar="رقم الموبايل" data-en="Phone number">Phone number</label>
         <input type="tel" id="custPhone" placeholder="01xxxxxxxxx" />
       </div>
       <div class="form-group">
-        <label data-ar="العنوان" data-en="Delivery address">العنوان</label>
+        <label data-ar="العنوان" data-en="Delivery address">Delivery address</label>
         <input type="text" id="custAddress" placeholder="..." />
       </div>
 
-      <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:8px; color:var(--cream-dim);" data-ar="طريقة الدفع" data-en="Payment method">طريقة الدفع</label>
+      <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:8px; color:var(--cream-dim);" data-ar="طريقة الدفع" data-en="Payment method">Payment method</label>
       <div class="radio-group">
         <div class="radio-opt selected" data-pay="cash">
-          <span data-ar="💵 كاش عند الاستلام" data-en="💵 Cash on delivery">💵 كاش عند الاستلام</span>
+          <span data-ar="💵 كاش عند الاستلام" data-en="💵 Cash on delivery">💵 Cash on delivery</span>
         </div>
         <div class="radio-opt" data-pay="card">
-          <span data-ar="💳 بطاقة" data-en="💳 Card">💳 بطاقة</span>
+          <span data-ar="💳 بطاقة" data-en="💳 Card">💳 Card</span>
         </div>
       </div>
 
       <button class="checkout-btn" id="confirmOrderBtn">
-        <span data-ar="تأكيد الطلب" data-en="Confirm order">تأكيد الطلب</span> 🔥
+        <span data-ar="تأكيد الطلب" data-en="Confirm order">Confirm order</span> 🔥
       </button>
     </div>
 
     <div class="success-view" id="successView">
       <div class="ico">✅</div>
-      <h3 data-ar="تم تأكيد طلبك!" data-en="Order confirmed!">تم تأكيد طلبك!</h3>
-      <p data-ar="فتحنالك واتساب برسالة الطلب جاهزة — اضغط إرسال هناك لتأكيد الطلب." data-en="We opened WhatsApp with your order ready — tap send there to confirm.">فتحنالك واتساب برسالة الطلب جاهزة — اضغط إرسال هناك لتأكيد الطلب.</p>
+      <h3 data-ar="تم تأكيد طلبك!" data-en="Order confirmed!">Order confirmed!</h3>
+      <p data-ar="فتحنالك واتساب برسالة الطلب جاهزة — اضغط إرسال هناك لتأكيد الطلب." data-en="We opened WhatsApp with your order ready — tap send there to confirm.">We opened WhatsApp with your order ready — tap send there to confirm.</p>
       <div class="order-id" id="orderIdVal">#NT-0000</div>
-      <p data-ar="بعد التأكيد، التوصيل خلال 25-35 دقيقة تقريباً." data-en="Once confirmed, delivery takes around 25–35 minutes.">بعد التأكيد، التوصيل خلال 25-35 دقيقة تقريباً.</p>
+      <p data-ar="بعد التأكيد، التوصيل خلال 25-35 دقيقة تقريباً." data-en="Once confirmed, delivery takes around 25–35 minutes.">Once confirmed, delivery takes around 25–35 minutes.</p>
       <button class="btn btn-primary" id="closeSuccessBtn" style="margin-top:18px; width:100%; justify-content:center;">
-        <span data-ar="تمام" data-en="Got it">تمام</span>
+        <span data-ar="تمام" data-en="Got it">Got it</span>
       </button>
     </div>
   </div>
@@ -1009,9 +1165,9 @@ const DELIVERY_FEE = 25;
 const RESTAURANT_WHATSAPP = '201035419531'; // رقم واتساب المطعم (بالكود الدولي، بدون + أو أصفار)
 
 /* ============================================================
-   STATE
+   STATE (تم تغيير اللغة الافتراضية لـ en)
 ============================================================ */
-let lang = 'ar';
+let lang = 'en'; 
 let activeCat = 'all';
 let cart = {}; // id -> qty
 
@@ -1042,12 +1198,33 @@ langToggle.addEventListener('click', ()=>{
 });
 
 /* ============================================================
-   MOBILE NAV
+   MOBILE NAV (SIDEBAR DRAWER)
 ============================================================ */
 const burgerToggle = document.getElementById('burgerToggle');
 const navLinks = document.getElementById('navLinks');
-burgerToggle.addEventListener('click', ()=> navLinks.classList.toggle('open'));
-navLinks.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=> navLinks.classList.remove('open')));
+const navOverlay = document.getElementById('navOverlay');
+const navCloseBtn = document.getElementById('navCloseBtn');
+
+function openNav() {
+  navLinks.classList.add('open');
+  if(navOverlay) navOverlay.classList.add('show');
+  document.body.style.overflow = 'hidden'; // منع سكرول الموقع والقائمة مفتوحة
+}
+
+function closeNav() {
+  navLinks.classList.remove('open');
+  if(navOverlay) navOverlay.classList.remove('show');
+  document.body.style.overflow = ''; // تشغيل السكرول تاني
+}
+
+if(burgerToggle) burgerToggle.addEventListener('click', openNav);
+if(navCloseBtn) navCloseBtn.addEventListener('click', closeNav);
+if(navOverlay) navOverlay.addEventListener('click', closeNav);
+
+// إغلاق القائمة لما العميل يضغط على أي رابط ينتقل بيه
+navLinks.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', closeNav);
+});
 
 /* ============================================================
    HERO / ABOUT IMAGES
@@ -1270,31 +1447,38 @@ function buildWhatsAppMessage({orderId, name, phone, address, payLabel}){
   const { subtotal, delivery, total } = cartTotals();
 
   let lines = [];
-  lines.push(`🔥 *طلب جديد - نار & توابل* 🔥`);
-  lines.push(`رقم الطلب: #${orderId}`);
+  
+  // استخدام مسافات صريحة لحماية الإيموجيز من تشويه واتساب ويب
+  lines.push(`🔥 *طلب جديد من مطعم نار & توابل* 🔥`);
+  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+  lines.push(`🔢  *رقم الطلب:* #${orderId}`);
+  lines.push(`⏰  *توقيت الطلب:* ${new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}`);
   lines.push(``);
-  lines.push(`*الأصناف:*`);
-
+  
+  lines.push(`🛒  *تفاصيل الأوردر:*`);
   Object.entries(cart).forEach(([id, qty])=>{
     const item = getItem(id);
     if(!item) return;
-    lines.push(`• ${item.name.ar} × ${qty} — ${item.price * qty} ج.م`);
+    lines.push(`🍗  ${item.name.ar} (×${qty}) ⟵ *${item.price * qty} ج.م*`);
   });
 
+  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+  lines.push(`💵  *المجموع:* ${subtotal} ج.م`);
+  lines.push(`🛵  *خدمة التوصيل:* ${delivery} ج.م`);
+  lines.push(`💰  *الإجمالي المطلوب:* *${total} ج.م*`);
+  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
   lines.push(``);
-  lines.push(`المجموع الفرعي: ${subtotal} ج.م`);
-  lines.push(`التوصيل: ${delivery} ج.م`);
-  lines.push(`*الإجمالي: ${total} ج.م*`);
+  
+  lines.push(`📍  *بيانات التوصيل:*`);
+  lines.push(`👤  *الاسم:* ${name}`);
+  lines.push(`📞  *رقم الموبايل:* ${phone}`);
+  lines.push(`🏠  *العنوان:* ${address}`);
+  lines.push(`💳  *طريقة الدفع:* ${payLabel}`);
   lines.push(``);
-  lines.push(`*بيانات العميل:*`);
-  lines.push(`الاسم: ${name}`);
-  lines.push(`الموبايل: ${phone}`);
-  lines.push(`العنوان: ${address}`);
-  lines.push(`طريقة الدفع: ${payLabel}`);
 
-  return lines.join('\n');
+  // دمج السطور برمز النزول لسطر جديد آمن للواتساب (\r\n)
+  return lines.join('\r\n');
 }
-
 document.getElementById('confirmOrderBtn').addEventListener('click', ()=>{
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
@@ -1310,14 +1494,16 @@ document.getElementById('confirmOrderBtn').addEventListener('click', ()=>{
     return;
   }
 
-  const orderId = 'NT-' + Math.floor(1000 + Math.random()*9000);
+  // 1. بيجيب آخر رقم طلب متسجل على جهاز العميل، ولو مفيش يبدأ من 1000
+  let lastOrderNum = parseInt(localStorage.getItem('lastOrderNum')) || 1000;
+  lastOrderNum++; // 2. بيزود رقم الطلب 1
+  localStorage.setItem('lastOrderNum', lastOrderNum); 
+  const orderId = 'NT-' + lastOrderNum;
   const payLabel = selectedPay === 'cash' ? 'كاش عند الاستلام' : 'بطاقة';
 
-  // بناء رسالة واتساب وفتحها في تاب جديد — العميل لازم يضغط "إرسال" بنفسه داخل واتساب
-  const message = buildWhatsAppMessage({orderId, name, phone, address, payLabel});
-  const waUrl = `https://wa.me/${RESTAURANT_WHATSAPP}?text=${encodeURIComponent(message)}`;
+const message = buildWhatsAppMessage({orderId, name, phone, address, payLabel});
+  const waUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP}&text=${encodeURIComponent(message)}`;
   window.open(waUrl, '_blank');
-
   document.getElementById('orderIdVal').textContent = '#' + orderId;
 
   checkoutFormView.style.display = 'none';
