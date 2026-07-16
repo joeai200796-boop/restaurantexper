@@ -650,8 +650,8 @@
       color: var(--cream);
     }
     .nav-close-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--line);
+background: transparent;     
+ border: 1px solid var(--line);
       color: var(--cream);
       width: 38px;
       height: 38px;
@@ -711,7 +711,7 @@
       font-size: 1.05rem;
       font-weight: 700;
       color: var(--cream-dim);
-      background: var(--bg-card);
+background: transparent;
       border: 1px solid var(--line);
       border-radius: 12px;
       transition: all 0.2s;
@@ -741,6 +741,34 @@
   .dev-credit a:hover {
     color: var(--spice);
     text-shadow: 0 0 10px rgba(242, 181, 68, 0.4);
+  }
+  /* ===== تنسيقات أزرار اختيار طريقة الطلب والتوهج ===== */
+  .method-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 18px;
+    background: transparent;
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    text-align: right;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+  [dir="ltr"] .method-btn { text-align: left; }
+
+  /* توهج أخضر لزرار الواتساب */
+  .hover-glow-wa:hover {
+    border-color: #25D366 !important;
+    background: rgba(37, 211, 102, 0.08) !important;
+    box-shadow: 0 0 22px rgba(37, 211, 102, 0.4), inset 0 0 10px rgba(37, 211, 102, 0.15) !important;
+    transform: translateY(-3px);
+  }
+
+  /* توهج ناري/برتقالي لزرار الأوتوماتيك */
+  .hover-glow-auto:hover {
+    border-color: var(--ember) !important;
+    background: rgba(232, 98, 44, 0.08) !important;
+    box-shadow: 0 0 22px rgba(232, 98, 44, 0.4), inset 0 0 10px rgba(232, 98, 44, 0.15) !important;
+    transform: translateY(-3px);
   }
 </style>
 </head>
@@ -1023,13 +1051,48 @@
   <div class="modal">
     <button class="modal-close" id="modalCloseBtn">✕</button>
 
-    <div id="checkoutFormView">
+    <!-- الشاشة (1): اختيار طريقة الطلب -->
+    <div id="orderMethodView">
+      <h3 data-ar="اختر طريقة الطلب" data-en="Choose Order Method">Choose Order Method</h3>
+      <p class="modal-sub" data-ar="كيف تفضل إرسال ومتابعة طلبك؟" data-en="How would you like to send your order?">How would you like to send your order?</p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 20px;">
+        
+        <!-- خيار الواتساب (شفاف بالكامل) -->
+        <button class="btn method-btn hover-glow-wa" id="chooseWaBtn">
+          <div style="display: flex; align-items: center; gap: 16px; width: 100%;">
+            <!-- لوجو واتساب الرسمي -->
+<svg width="34" height="34" viewBox="0 0 24 24" fill="#25D366" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+              <path d="M12.012 2C6.466 2 1.96 6.486 1.956 12.015c0 1.767.458 3.492 1.332 5.012L2 22l5.127-1.337c1.464.799 3.125 1.22 4.88 1.22h.004c5.546 0 10.052-4.486 10.056-10.015A9.97 9.97 0 0019.124 4.93a9.92 9.92 0 00-7.112-2.93zm0 18.232h-.004a8.318 8.318 0 01-4.24-1.162l-.304-.18-3.155.827.842-3.076-.198-.315a8.27 8.27 0 01-1.272-4.43c.003-4.595 3.74-8.332 8.337-8.332 2.226 0 4.316.868 5.888 2.443a8.27 8.27 0 012.44 5.891c-.003 4.594-3.74 8.334-8.334 8.334zm4.568-6.225c-.25-.125-1.482-.732-1.712-.816-.23-.083-.398-.125-.565.125-.167.25-.648.816-.795.983-.146.167-.294.187-.544.062-.25-.125-1.058-.39-2.015-1.242-.745-.663-1.247-1.483-1.394-1.733-.146-.25-.015-.385.11-.51.112-.113.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.02-.438-.063-.125-.566-1.355-.776-1.855-.205-.487-.413-.42-.566-.428l-.483-.008c-.167 0-.44.062-.67.313-.23.25-.877.855-.877 2.085s.898 2.418 1.023 2.585c.125.167 1.765 2.693 4.276 3.778.598.258 1.065.412 1.43.528.6.19 1.144.163 1.572.099.482-.072 1.482-.605 1.692-1.19.21-.585.21-1.085.147-1.19-.063-.105-.23-.167-.48-.292z"/>
+            </svg>
+            <div style="flex: 1; text-align: start;">
+              <b style="display: block; font-size: 1.05rem; color: var(--cream);" data-ar="أكمل الطلب عبر واتساب" data-en="Order via WhatsApp">أكمل الطلب عبر واتساب</b>
+              <span style="font-size: 0.8rem; color: var(--cream-dim);" data-ar="سيتم فتح شات واتساب برسالة جاهزة لإرسالها" data-en="Opens WhatsApp with a ready-to-send message">سيتم فتح شات واتساب برسالة جاهزة لإرسالها</span>
+            </div>
+          </div>
+        </button>
+
+        <!-- خيار الأوتوماتيك (شفاف بالكامل) -->
+        <button class="btn method-btn hover-glow-auto" id="chooseAutoBtn">
+          <div style="display: flex; align-items: center; gap: 16px; width: 100%;">
+            <span style="font-size: 2rem; flex-shrink: 0; line-height: 1; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px;">⚡</span>
+            <div style="flex: 1; text-align: start;">
+              <b style="display: block; font-size: 1.05rem; color: var(--cream);" data-ar="أكمل الطلب أوتوماتيكياً" data-en="Automatic Order">أكمل الطلب أوتوماتيكياً</b>
+              <span style="font-size: 0.8rem; color: var(--cream-dim);" data-ar="إرسال فوري ومباشر لنظام المطعم دون الخروج من الموقع" data-en="Direct instant order without leaving the site">إرسال فوري ومباشر لنظام المطعم دون الخروج من الموقع</span>
+            </div>
+          </div>
+        </button>
+
+      </div>
+    </div>
+    <!-- الشاشة (2): إدخال البيانات -->
+    <div id="checkoutFormView" style="display: none;">
       <h3 data-ar="إتمام الطلب" data-en="Checkout">Checkout</h3>
-      <p class="modal-sub" data-ar="هنحتاج بياناتك عشان نوصلك الطلب" data-en="We just need a few details to get your order moving">We just need a few details to get your order moving</p>
+      <p class="modal-sub" id="formSubtitle" data-ar="هنحتاج بياناتك عشان نوصلك الطلب" data-en="We just need a few details to get your order moving">We just need a few details to get your order moving</p>
 
       <div class="form-group">
         <label data-ar="الاسم بالكامل" data-en="Full name">Full name</label>
-        <input type="text" id="custName" placeholder="..." />
+        <input type="text" id="custName" placeholder="اسم الطلب" />
       </div>
       <div class="form-group">
         <label data-ar="رقم الموبايل" data-en="Phone number">Phone number</label>
@@ -1037,7 +1100,7 @@
       </div>
       <div class="form-group">
         <label data-ar="العنوان" data-en="Delivery address">Delivery address</label>
-        <input type="text" id="custAddress" placeholder="..." />
+        <input type="text" id="custAddress" placeholder="العنوان" />
       </div>
 
       <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:8px; color:var(--cream-dim);" data-ar="طريقة الدفع" data-en="Payment method">Payment method</label>
@@ -1051,23 +1114,28 @@
       </div>
 
       <button class="checkout-btn" id="confirmOrderBtn">
-        <span data-ar="تأكيد الطلب" data-en="Confirm order">Confirm order</span> 🔥
+        <span id="confirmBtnText" data-ar="تأكيد الطلب" data-en="Confirm order">Confirm order</span> 🔥
+      </button>
+      
+      <button id="backToMethodBtn" style="background: none; border: none; color: var(--cream-dim); width: 100%; margin-top: 12px; text-decoration: underline; font-size: 0.85rem; cursor: pointer;">
+        <span data-ar="→ الرجوع لاختيار طريقة الطلب" data-en="← Back to order methods">→ الرجوع لاختيار طريقة الطلب</span>
       </button>
     </div>
 
+    <!-- الشاشة (3): شاشة النجاح -->
     <div class="success-view" id="successView">
       <div class="ico">✅</div>
-      <h3 data-ar="تم تأكيد طلبك!" data-en="Order confirmed!">Order confirmed!</h3>
-      <p data-ar="فتحنالك واتساب برسالة الطلب جاهزة — اضغط إرسال هناك لتأكيد الطلب." data-en="We opened WhatsApp with your order ready — tap send there to confirm.">We opened WhatsApp with your order ready — tap send there to confirm.</p>
+      <h3 data-ar="تم إرسال طلبك بنجاح!" data-en="Order sent successfully!">Order sent successfully!</h3>
+      <p id="successMsgText" data-ar="تم استلام طلبك في نظام المطعم وسنتواصل معك قريباً للتوصيل." data-en="We received your order and will contact you soon for delivery.">We received your order and will contact you soon for delivery.</p>
       <div class="order-id" id="orderIdVal">#NT-0000</div>
-      <p data-ar="بعد التأكيد، التوصيل خلال 25-35 دقيقة تقريباً." data-en="Once confirmed, delivery takes around 25–35 minutes.">Once confirmed, delivery takes around 25–35 minutes.</p>
+      <p data-ar="التوصيل خلال 25-35 دقيقة تقريباً." data-en="Delivery takes around 25–35 minutes.">Delivery takes around 25–35 minutes.</p>
       <button class="btn btn-primary" id="closeSuccessBtn" style="margin-top:18px; width:100%; justify-content:center;">
         <span data-ar="تمام" data-en="Got it">Got it</span>
       </button>
     </div>
+
   </div>
 </div>
-
 <div class="toast" id="toast">✓ <span id="toastText"></span></div>
 
 <script>
@@ -1421,6 +1489,7 @@ function showToast(msg){
    CHECKOUT MODAL
 ============================================================ */
 const modalOverlay = document.getElementById('modalOverlay');
+let selectedOrderMethod = 'auto'; // هتشيل قيمة 'wa' أو 'auto'
 const checkoutFormView = document.getElementById('checkoutFormView');
 const successView = document.getElementById('successView');
 let selectedPay = 'cash';
@@ -1428,8 +1497,67 @@ let selectedPay = 'cash';
 document.getElementById('checkoutBtn').addEventListener('click', ()=>{
   if(checkoutBtn.disabled) return;
   modalOverlay.classList.add('show');
-  checkoutFormView.style.display = 'block';
+  
+  // نظهر شاشة الاختيار ونخفي الفورم وشاشة النجاح
+  document.getElementById('orderMethodView').style.display = 'block';
+  checkoutFormView.style.display = 'none';
   successView.classList.remove('show');
+});
+// لو اختار واتساب
+document.getElementById('chooseWaBtn').addEventListener('click', () => {
+  selectedOrderMethod = 'wa';
+  document.getElementById('orderMethodView').style.display = 'none';
+  document.getElementById('checkoutFormView').style.display = 'block';
+  
+  // تحويل زرار التأكيد للأخضر الجريديانت (الشيك)
+  const confirmBtn = document.getElementById('confirmOrderBtn');
+  confirmBtn.style.background = 'linear-gradient(135deg, #25D366, #128C7E)';
+  confirmBtn.style.boxShadow = '0 10px 28px rgba(37, 211, 102, 0.35)';
+  
+  // إضافة لوجو واتساب أبيض
+const waLogo = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin: 0 4px;"><path d="M12.012 2C6.466 2 1.96 6.486 1.956 12.015c0 1.767.458 3.492 1.332 5.012L2 22l5.127-1.337c1.464.799 3.125 1.22 4.88 1.22h.004c5.546 0 10.052-4.486 10.056-10.015A9.97 9.97 0 0019.124 4.93a9.92 9.92 0 00-7.112-2.93zm0 18.232h-.004a8.318 8.318 0 01-4.24-1.162l-.304-.18-3.155.827.842-3.076-.198-.315a8.27 8.27 0 01-1.272-4.43c.003-4.595 3.74-8.332 8.337-8.332 2.226 0 4.316.868 5.888 2.443a8.27 8.27 0 012.44 5.891c-.003 4.594-3.74 8.334-8.334 8.334zm4.568-6.225c-.25-.125-1.482-.732-1.712-.816-.23-.083-.398-.125-.565.125-.167.25-.648.816-.795.983-.146.167-.294.187-.544.062-.25-.125-1.058-.39-2.015-1.242-.745-.663-1.247-1.483-1.394-1.733-.146-.25-.015-.385.11-.51.112-.113.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.02-.438-.063-.125-.566-1.355-.776-1.855-.205-.487-.413-.42-.566-.428l-.483-.008c-.167 0-.44.062-.67.313-.23.25-.877.855-.877 2.085s.898 2.418 1.023 2.585c.125.167 1.765 2.693 4.276 3.778.598.258 1.065.412 1.43.528.6.19 1.144.163 1.572.099.482-.072 1.482-.605 1.692-1.19.21-.585.21-1.085.147-1.19-.063-.105-.23-.167-.48-.292z"/></svg>`;  
+  const text = lang === 'ar' ? 'تأكيد عبر واتساب' : 'Confirm via WhatsApp';
+  confirmBtn.innerHTML = `<span id="confirmBtnText">${text}</span> ${waLogo}`;
+});
+
+// لو اختار أوتوماتيك
+document.getElementById('chooseAutoBtn').addEventListener('click', () => {
+  selectedOrderMethod = 'auto';
+  document.getElementById('orderMethodView').style.display = 'none';
+  document.getElementById('checkoutFormView').style.display = 'block';
+  
+  // إرجاع زرار التأكيد للونه الأصلي (الناري الجريديانت)
+  const confirmBtn = document.getElementById('confirmOrderBtn');
+  confirmBtn.style.background = ''; // هيرجع للـ CSS الأساسي
+  confirmBtn.style.boxShadow = '';
+  
+  const text = lang === 'ar' ? 'تأكيد وإرسال الطلب' : 'Confirm Order';
+  confirmBtn.innerHTML = `<span id="confirmBtnText">${text}</span> ⚡`;
+});
+
+// تشغيل زرار الرجوع
+document.getElementById('backToMethodBtn').addEventListener('click', () => {
+  document.getElementById('checkoutFormView').style.display = 'none';
+  document.getElementById('orderMethodView').style.display = 'block';
+});
+
+// لو اختار أوتوماتيك
+document.getElementById('chooseAutoBtn').addEventListener('click', () => {
+  selectedOrderMethod = 'auto';
+  document.getElementById('orderMethodView').style.display = 'none';
+  document.getElementById('checkoutFormView').style.display = 'block';
+  
+  // إرجاع زرار التأكيد للونه البرتقالي
+  const confirmBtn = document.getElementById('confirmOrderBtn');
+  confirmBtn.style.background = ''; 
+  confirmBtn.style.boxShadow = '';
+  confirmBtn.innerHTML = lang === 'ar' ? `تأكيد وإرسال الطلب ⚡` : `Confirm Order ⚡`;
+});
+
+// تشغيل زرار الرجوع
+document.getElementById('backToMethodBtn').addEventListener('click', () => {
+  document.getElementById('checkoutFormView').style.display = 'none';
+  document.getElementById('orderMethodView').style.display = 'block';
 });
 
 document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
@@ -1489,35 +1617,41 @@ document.getElementById('confirmOrderBtn').addEventListener('click', ()=>{
     return;
   }
 
-  if(Object.keys(cart).length === 0){
-    showToast(lang==='ar' ? 'السلة فاضية' : 'Your cart is empty');
-    return;
-  }
-
-  // 1. بيجيب آخر رقم طلب متسجل على جهاز العميل، ولو مفيش يبدأ من 1000
+  // توليد رقم الطلب
   let lastOrderNum = parseInt(localStorage.getItem('lastOrderNum')) || 1000;
-  lastOrderNum++; // 2. بيزود رقم الطلب 1
+  lastOrderNum++;
   localStorage.setItem('lastOrderNum', lastOrderNum); 
   const orderId = 'NT-' + lastOrderNum;
   const payLabel = selectedPay === 'cash' ? 'كاش عند الاستلام' : 'بطاقة';
 
-const message = buildWhatsAppMessage({orderId, name, phone, address, payLabel});
-  const waUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP}&text=${encodeURIComponent(message)}`;
-  window.open(waUrl, '_blank');
-  document.getElementById('orderIdVal').textContent = '#' + orderId;
+  // بناء الرسالة (دي الرسالة اللي هتتبعت للتليجرام وللواتساب)
+  const message = buildWhatsAppMessage({orderId, name, phone, address, payLabel});
 
-  checkoutFormView.style.display = 'none';
-  successView.classList.add('show');
+  // 1. إرسال أوتوماتيك للتليجرام (في الخلفية)
+  const TELEGRAM_TOKEN = '8892636097:AAHwaKcY9VdlJrFHqKTlRpNpeoHZpD4zvwk'; 
+  const CHAT_ID = '6822632384';
+  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+  });
 
-  // reset
-  cart = {};
-  renderMenu();
-  renderCart();
-  closeCart();
+// بعد ما بعتنا التليجرام في الخلفية، نشوف العميل كان مختار إيه:
+  if (selectedOrderMethod === 'wa') {
+    // لو مختار واتساب: نفتحله الشات ونقفل المودال
+    const waUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP}&text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+    closeModal();
+    showToast(lang === 'ar' ? '✓ تم تحويلك لواتساب' : '✓ Redirected to WhatsApp');
+  } else {
+    // لو مختار أوتوماتيك: نظهرله شاشة النجاح في الموقع
+    document.getElementById('orderIdVal').textContent = '#' + orderId;
+    checkoutFormView.style.display = 'none';
+    successView.classList.add('show');
+  }
+  // تصفير السلة
+  cart = {}; renderMenu(); renderCart();
 
-  document.getElementById('custName').value = '';
-  document.getElementById('custPhone').value = '';
-  document.getElementById('custAddress').value = '';
 });
 
 document.getElementById('closeSuccessBtn').addEventListener('click', closeModal);
