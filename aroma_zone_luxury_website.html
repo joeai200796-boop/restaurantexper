@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#c9a96e;
+  --gold-light:#e8d5a3;
+  --gold-dark:#8a6a30;
+  --dark:#0a0806;
+  --dark2:#111009;
+  --dark3:#1a1710;
+  --surface:#1f1c12;
+  --text:#f5ede0;
+  --text-muted:#8a7d6b;
+}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:var(--text);font-family:'Montserrat',sans-serif;font-weight:300;overflow-x:hidden;cursor:none}
+
+.cursor{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid var(--gold);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.15s ease;opacity:0.6}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center;mix-blend-mode:normal}
+.nav-blur{position:fixed;top:0;left:0;right:0;height:100px;background:linear-gradient(to bottom,rgba(10,8,6,0.95),transparent);z-index:99;pointer-events:none}
+.logo-nav{font-family:'Cormorant Garamond',serif;font-size:1.4rem;letter-spacing:0.3em;color:var(--gold);font-weight:300;text-transform:uppercase}
+.logo-nav span{font-style:italic;font-size:0.85rem;display:block;letter-spacing:0.5em;color:var(--text-muted);margin-top:2px}
+.nav-links{display:flex;gap:3rem;list-style:none}
+.nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;transition:color 0.3s}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{border:1px solid var(--gold);color:var(--gold);padding:0.6rem 1.8rem;font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;text-decoration:none;transition:all 0.3s;background:transparent}
+.nav-cta:hover{background:var(--gold);color:var(--dark)}
+
+section{min-height:100vh;position:relative}
+
+.hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:0 4rem;overflow:hidden}
+.hero-left{z-index:2;padding-top:6rem}
+.eyebrow{font-size:0.65rem;letter-spacing:0.4em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;opacity:0;animation:fadeUp 1s 0.3s forwards}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,6vw,5.5rem);font-weight:300;line-height:1.1;margin-bottom:2rem;opacity:0;animation:fadeUp 1s 0.5s forwards}
+.hero-title em{font-style:italic;color:var(--gold)}
+.hero-title .line2{display:block;font-weight:600;font-size:clamp(4rem,7vw,6.5rem);letter-spacing:-0.02em}
+.hero-sub{font-size:0.8rem;line-height:1.9;color:var(--text-muted);max-width:360px;margin-bottom:3rem;opacity:0;animation:fadeUp 1s 0.7s forwards;direction:rtl;text-align:right}
+.hero-actions{display:flex;gap:1.5rem;align-items:center;opacity:0;animation:fadeUp 1s 0.9s forwards}
+.btn-primary{background:var(--gold);color:var(--dark);padding:1rem 2.5rem;font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;border:none;cursor:none;transition:all 0.3s;font-family:'Montserrat',sans-serif}
+.btn-primary:hover{background:var(--gold-light)}
+.btn-secondary{color:var(--text-muted);font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;display:flex;align-items:center;gap:0.5rem;transition:color 0.3s}
+.btn-secondary:hover{color:var(--gold)}
+.btn-secondary::after{content:'→';transition:transform 0.3s}
+.btn-secondary:hover::after{transform:translateX(4px)}
+
+.hero-right{position:relative;height:100vh;display:flex;align-items:center;justify-content:center;opacity:0;animation:fadeIn 1.5s 0.2s forwards}
+.hero-bottle-wrap{position:relative;width:300px;height:500px}
+.hero-bottle-bg{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(201,169,110,0.08) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation:pulse 4s ease-in-out infinite}
+.hero-bottle{width:200px;height:380px;background:linear-gradient(135deg,rgba(201,169,110,0.15),rgba(201,169,110,0.05),rgba(201,169,110,0.2));border:1px solid rgba(201,169,110,0.3);position:relative;left:50%;transform:translateX(-50%);margin-top:60px;animation:float 6s ease-in-out infinite}
+.hero-bottle::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:40px;height:40px;background:linear-gradient(135deg,rgba(201,169,110,0.4),rgba(201,169,110,0.1));border:1px solid rgba(201,169,110,0.4)}
+.hero-bottle::after{content:'AROMA ZONE';position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',serif;font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);white-space:nowrap;opacity:0.8}
+.bottle-label{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.bottle-label p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;color:var(--gold-light);opacity:0.9}
+.bottle-shine{position:absolute;top:10%;left:15%;width:2px;height:60%;background:linear-gradient(to bottom,transparent,rgba(201,169,110,0.4),transparent)}
+
+.golden-line{width:60px;height:1px;background:var(--gold);margin:0 auto 4rem;opacity:0;animation:fadeIn 1s 1.2s forwards}
+
+.scroll-indicator{position:absolute;bottom:3rem;left:4rem;display:flex;align-items:center;gap:1rem;opacity:0;animation:fadeIn 1s 1.5s forwards}
+.scroll-indicator span{font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--text-muted)}
+.scroll-line{width:40px;height:1px;background:var(--gold-dark);position:relative;overflow:hidden}
+.scroll-line::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:var(--gold);animation:scrollAnim 2s ease-in-out infinite}
+
+.featured-products{background:var(--dark2);padding:8rem 4rem}
+.section-header{text-align:center;margin-bottom:6rem}
+.section-eyebrow{font-size:0.6rem;letter-spacing:0.5em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,4vw,3.5rem);font-weight:300;line-height:1.2}
+.section-title em{font-style:italic;color:var(--gold)}
+.divider{width:40px;height:1px;background:var(--gold);margin:2rem auto 0}
+
+.products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.product-card{position:relative;overflow:hidden;cursor:none;background:var(--dark3)}
+.product-card:first-child{grid-row:span 2}
+.product-img{width:100%;aspect-ratio:3/4;background:var(--surface);display:flex;align-items:center;justify-content:center;transition:transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);overflow:hidden;position:relative}
+.product-card:first-child .product-img{aspect-ratio:auto;height:100%}
+.product-img::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(10,8,6,0.9));z-index:1}
+.product-bottle{width:80px;height:140px;background:linear-gradient(135deg,rgba(201,169,110,0.2),rgba(201,169,110,0.05));border:1px solid rgba(201,169,110,0.25);position:relative;transition:transform 0.6s}
+.product-bottle::before{content:'';position:absolute;top:-25px;left:50%;transform:translateX(-50%);width:25px;height:25px;background:rgba(201,169,110,0.2);border:1px solid rgba(201,169,110,0.3)}
+.product-card:hover .product-bottle{transform:scale(1.05) translateY(-5px)}
+.product-card:first-child .product-bottle{width:120px;height:220px}
+.product-card:first-child .product-bottle::before{width:35px;height:35px;top:-35px}
+.product-info{position:absolute;bottom:0;left:0;right:0;padding:2rem;z-index:2;transform:translateY(20px);transition:transform 0.4s}
+.product-card:hover .product-info{transform:translateY(0)}
+.product-brand{font-size:0.55rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--gold);margin-bottom:0.5rem}
+.product-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;margin-bottom:0.3rem}
+.product-price{font-size:0.7rem;color:var(--text-muted);letter-spacing:0.1em}
+.product-overlay{position:absolute;inset:0;background:rgba(201,169,110,0.05);opacity:0;transition:opacity 0.4s;z-index:0}
+.product-card:hover .product-overlay{opacity:1}
+
+.experience-section{padding:10rem 0;overflow:hidden;position:relative}
+.experience-inner{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:stretch}
+.exp-visual{background:var(--surface);position:relative;min-height:600px;overflow:hidden}
+.exp-pattern{position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(201,169,110,0.03) 0px,rgba(201,169,110,0.03) 1px,transparent 1px,transparent 20px);animation:patternMove 20s linear infinite}
+.exp-centerpiece{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.exp-ring{width:250px;height:250px;border:1px solid rgba(201,169,110,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:spin 20s linear infinite}
+.exp-ring-inner{width:180px;height:180px;border:1px solid rgba(201,169,110,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.exp-logo{font-family:'Cormorant Garamond',serif;font-size:1.2rem;letter-spacing:0.3em;color:var(--gold);text-align:center;line-height:1.4}
+.exp-logo span{font-style:italic;font-size:0.7rem;display:block;color:var(--text-muted);letter-spacing:0.5em}
+.exp-content{background:var(--dark3);padding:6rem 5rem;display:flex;flex-direction:column;justify-content:center;direction:rtl}
+.exp-number{font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:300;color:rgba(201,169,110,0.1);line-height:1;margin-bottom:-1rem}
+.exp-title{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;line-height:1.3;margin-bottom:1.5rem}
+.exp-title em{font-style:italic;color:var(--gold)}
+.exp-text{font-size:0.78rem;line-height:2;color:var(--text-muted);margin-bottom:3rem;text-align:right}
+.exp-stats{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:3rem}
+.stat-item{text-align:right}
+.stat-number{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--gold);display:block;line-height:1}
+.stat-label{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-top:0.3rem}
+
+.collections{padding:8rem 4rem;background:var(--dark)}
+.collections-grid{display:grid;grid-template-columns:1fr 2fr;gap:2px;margin-top:5rem}
+.collection-item{position:relative;overflow:hidden;cursor:none}
+.collection-item:last-child{grid-column:span 2}
+.coll-bg{height:350px;background:var(--surface);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:all 0.6s}
+.collection-item:last-child .coll-bg{height:250px}
+.coll-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(10,8,6,0.8),transparent)}
+.collection-item:hover .coll-bg{background:var(--surface)}
+.coll-pattern{position:absolute;inset:0;opacity:0.3}
+.coll-info{position:absolute;bottom:2.5rem;right:2.5rem;z-index:2;text-align:right;direction:rtl}
+.coll-cat{font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--gold);margin-bottom:0.5rem}
+.coll-name{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300}
+.coll-count{font-size:0.65rem;color:var(--text-muted);margin-top:0.3rem}
+.coll-arrow{position:absolute;top:2rem;left:2rem;z-index:2;width:40px;height:40px;border:1px solid rgba(201,169,110,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1rem;opacity:0;transition:all 0.4s;transform:translateX(-10px)}
+.collection-item:hover .coll-arrow{opacity:1;transform:translateX(0)}
+
+.testimonial{padding:8rem 4rem;background:var(--dark2);text-align:center;direction:rtl}
+.test-quote{font-family:'Cormorant Garamond',serif;font-size:clamp(1.5rem,3vw,2.2rem);font-style:italic;font-weight:300;line-height:1.6;max-width:700px;margin:0 auto 3rem;color:var(--text)}
+.test-author{font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold)}
+.test-stars{display:flex;justify-content:center;gap:0.5rem;margin-bottom:2rem}
+.star{width:12px;height:12px;background:var(--gold);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+
+.newsletter{padding:8rem 4rem;background:var(--surface);text-align:center;direction:rtl}
+.nl-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:300;margin-bottom:1rem}
+.nl-title em{font-style:italic;color:var(--gold)}
+.nl-sub{font-size:0.75rem;color:var(--text-muted);margin-bottom:3rem;line-height:1.8}
+.nl-form{display:flex;gap:0;max-width:500px;margin:0 auto;border:1px solid rgba(201,169,110,0.3)}
+.nl-input{flex:1;background:transparent;border:none;padding:1rem 1.5rem;color:var(--text);font-family:'Montserrat',sans-serif;font-size:0.75rem;font-weight:300;outline:none;direction:rtl}
+.nl-input::placeholder{color:var(--text-muted)}
+.nl-btn{background:var(--gold);color:var(--dark);border:none;padding:1rem 2rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;cursor:none;transition:background 0.3s;white-space:nowrap}
+.nl-btn:hover{background:var(--gold-light)}
+
+footer{padding:4rem;border-top:1px solid rgba(201,169,110,0.1)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.2rem;letter-spacing:0.3em;color:var(--gold)}
+.footer-logo span{font-style:italic;font-size:0.7rem;display:block;letter-spacing:0.5em;color:var(--text-muted)}
+.footer-links{display:flex;gap:2.5rem}
+.footer-links a{color:var(--text-muted);text-decoration:none;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;transition:color 0.3s}
+.footer-links a:hover{color:var(--gold)}
+.footer-copy{font-size:0.6rem;color:var(--text-muted);letter-spacing:0.15em}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.5}50%{transform:translate(-50%,-50%) scale(1.1);opacity:1}}
+@keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-15px)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes patternMove{from{background-position:0 0}to{background-position:40px 40px}}
+@keyframes scrollAnim{0%{left:-100%}100%{left:100%}}
+
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.8s ease,transform 0.8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="nav-blur"></div>
+<nav>
+  <div class="logo-nav">Aroma Zone<span>Perfumes</span></div>
+  <ul class="nav-links">
+    <li><a href="#">العطور</a></li>
+    <li><a href="#">المجموعات</a></li>
+    <li><a href="#">القصة</a></li>
+    <li><a href="#">التواصل</a></li>
+  </ul>
+  <a href="#" class="nav-cta">اكتشف الآن</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <p class="eyebrow">The Art of Fine Fragrance</p>
+    <h1 class="hero-title">
+      فن العطور<br>
+      <em class="line2">الراقية</em>
+    </h1>
+    <p class="hero-sub">عطور استثنائية تجمع بين الجودة الفاخرة والأسعار التي تناسب الجميع. كل قطرة حكاية، كل رائحة ذكرى.</p>
+    <div class="hero-actions">
+      <button class="btn-primary">استكشف المجموعة</button>
+      <button class="btn-secondary">تعرف على القصة</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-bottle-wrap">
+      <div class="hero-bottle-bg"></div>
+      <div class="hero-bottle">
+        <div class="bottle-shine"></div>
+        <div class="bottle-label"><p>Signature</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span>اكتشف المزيد</span>
+  </div>
+</section>
+
+<section class="featured-products reveal">
+  <div class="section-header">
+    <p class="section-eyebrow">المنتجات المميزة</p>
+    <h2 class="section-title">روائح <em>تُعرِّف</em> هويتك</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="products-grid">
+    <div class="product-card">
+      <div class="product-img">
+        <div class="product-overlay"></div>
+        <div class="product-bottle"></div>
+      </div>
+      <div class="product-info">
+        <p class="product-brand">Creed</p>
+        <p class="product-name">Aventus</p>
+        <p class="product-price">من ١٢٠٠ جنيه</p>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="product-img">
+        <div class="product-overlay"></div>
+        <div class="product-bottle"></div>
+      </div>
+      <div class="product-info">
+        <p class="product-brand">YSL</p>
+        <p class="product-name">Libre Intense</p>
+        <p class="product-price">من ٩٠٠ جنيه</p>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="product-img">
+        <div class="product-overlay"></div>
+        <div class="product-bottle"></div>
+      </div>
+      <div class="product-info">
+        <p class="product-brand">Byredo</p>
+        <p class="product-name">Mojave Ghost</p>
+        <p class="product-price">من ١٥٠٠ جنيه</p>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="product-img">
+        <div class="product-overlay"></div>
+        <div class="product-bottle"></div>
+      </div>
+      <div class="product-info">
+        <p class="product-brand">D&G</p>
+        <p class="product-name">The One</p>
+        <p class="product-price">من ٨٥٠ جنيه</p>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="product-img">
+        <div class="product-overlay"></div>
+        <div class="product-bottle"></div>
+      </div>
+      <div class="product-info">
+        <p class="product-brand">Kayali</p>
+        <p class="product-name">Vanilla 28</p>
+        <p class="product-price">من ١١٠٠ جنيه</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="experience-section reveal">
+  <div class="experience-inner">
+    <div class="exp-visual">
+      <div class="exp-pattern"></div>
+      <div class="exp-centerpiece">
+        <div class="exp-ring">
+          <div class="exp-ring-inner">
+            <div class="exp-logo">AZ<span>PERFUMES</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exp-content">
+      <p class="exp-number">01</p>
+      <h2 class="exp-title">تجربة <em>لا تُنسى</em><br>في كل رائحة</h2>
+      <p class="exp-text">نقدم لكم تشكيلة واسعة من أفخر العطور العالمية بأسعار تنافسية لا مثيل لها. نؤمن بأن الرفاهية حق للجميع.</p>
+      <div class="exp-stats">
+        <div class="stat-item">
+          <span class="stat-number">٢٠K+</span>
+          <p class="stat-label">عميل سعيد</p>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">٥٠٠+</span>
+          <p class="stat-label">عطر حصري</p>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">١٠٠+</span>
+          <p class="stat-label">براند عالمي</p>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">٥★</span>
+          <p class="stat-label">تقييم العملاء</p>
+        </div>
+      </div>
+      <button class="btn-primary">اعرف المزيد عنا</button>
+    </div>
+  </div>
+</section>
+
+<section class="collections reveal">
+  <div class="section-header">
+    <p class="section-eyebrow">المجموعات</p>
+    <h2 class="section-title">اكتشف <em>عالمك</em></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="collections-grid">
+    <div class="collection-item">
+      <div class="coll-bg">
+        <div class="coll-pattern" style="background:repeating-linear-gradient(90deg,rgba(201,169,110,0.05) 0px,rgba(201,169,110,0.05) 1px,transparent 1px,transparent 30px)"></div>
+      </div>
+      <div class="coll-info">
+        <p class="coll-cat">للرجال</p>
+        <p class="coll-name">عطور رجالية</p>
+        <p class="coll-count">١٨٠+ عطر</p>
+      </div>
+      <div class="coll-arrow">→</div>
+    </div>
+    <div class="collection-item">
+      <div class="coll-bg">
+        <div class="coll-pattern" style="background:repeating-linear-gradient(45deg,rgba(201,169,110,0.04) 0px,rgba(201,169,110,0.04) 1px,transparent 1px,transparent 25px)"></div>
+      </div>
+      <div class="coll-info">
+        <p class="coll-cat">للنساء</p>
+        <p class="coll-name">عطور نسائية</p>
+        <p class="coll-count">٢٣٠+ عطر</p>
+      </div>
+      <div class="coll-arrow">→</div>
+    </div>
+    <div class="collection-item">
+      <div class="coll-bg">
+        <div class="coll-pattern" style="background:repeating-linear-gradient(135deg,rgba(201,169,110,0.06) 0px,rgba(201,169,110,0.06) 1px,transparent 1px,transparent 20px)"></div>
+      </div>
+      <div class="coll-info">
+        <p class="coll-cat">للجنسين</p>
+        <p class="coll-name">العطور المشتركة — Unisex Collection</p>
+        <p class="coll-count">٩٠+ عطر فريد</p>
+      </div>
+      <div class="coll-arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonial reveal">
+  <div class="test-stars">
+    <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+  </div>
+  <blockquote class="test-quote">"أجمل ما في Aroma Zone أنهم قدروا يجيبولنا روائح العالم بأسعار ما كنا نحلم بيها. مش بس عطور، ده فن حقيقي."</blockquote>
+  <p class="test-author">— نور م.، القاهرة</p>
+</section>
+
+<section class="newsletter reveal">
+  <p class="section-eyebrow" style="margin-bottom:1.5rem">النشرة البريدية</p>
+  <h2 class="nl-title">كن أول <em>من يعرف</em></h2>
+  <p class="nl-sub">اشترك ليصلك أحدث العروض والعطور الجديدة قبل الجميع</p>
+  <div class="nl-form">
+    <input type="email" class="nl-input" placeholder="بريدك الإلكتروني">
+    <button class="nl-btn">اشترك</button>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Aroma Zone<span>Perfumes</span></div>
+    <div class="footer-links">
+      <a href="#">انستجرام</a>
+      <a href="#">واتساب</a>
+      <a href="#">الشروط</a>
+      <a href="#">تواصل معنا</a>
+    </div>
+    <p class="footer-copy">© ٢٠٢٥ Aroma Zone. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+const cursor=document.getElementById('cursor');
+const ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+function animRing(){rx+=(mx-rx)*0.15;ry+=(my-ry)*0.15;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)}
+animRing();
+document.querySelectorAll('button,a,.product-card,.collection-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.transform='translate(-50%,-50%) scale(1.5)';ring.style.opacity='1'});
+  el.addEventListener('mouseleave',()=>{ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.opacity='0.6'});
+});
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
