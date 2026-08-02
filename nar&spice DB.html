@@ -225,6 +225,19 @@ function login() {
         alert("تفاصيل هذا الطلب غير متوفرة (غالباً طلب قديم).");
       }
     }
+    // دالة حذف الطلب
+    function deleteOrder(docId) {
+      if (confirm("هل أنت متأكد من حذف هذا الطلب نهائياً؟")) {
+        db.collection("orders").doc(docId).delete().then(() => {
+          console.log("تم حذف الطلب بنجاح");
+          // رسالة تأكيد للمستخدم (اختياري)
+          // alert("تم حذف الطلب بنجاح");
+        }).catch((error) => {
+          console.error("حدث خطأ أثناء الحذف: ", error);
+          alert("حدث خطأ أثناء محاولة الحذف!");
+        });
+      }
+    }
 
     // تحديث حالة الطلب في الداتابيز
     function updateStatus(docId, newStatus) {
