@@ -268,6 +268,7 @@ function login() {
         message += "نتمنى تكون الوجبة عجبتك! بالهنا والشفا 🥰";
       }
 
+      // استخدام encodeURIComponent لضمان قراءة الإيموجيز والمسافات بشكل صحيح في الواتساب
       const whatsappUrl = `https://wa.me/${formattedPhone.replace('+', '')}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
     }
