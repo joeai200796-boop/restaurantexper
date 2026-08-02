@@ -130,54 +130,89 @@ function login() {
     }
 
     // متغير لحفظ بيانات الطلبات عشان نقدر نعرض تفاصيلها
+    // متغير لحفظ بيانات الطلبات
     window.allOrders = {};
 
-    // جلب الطلبات من Firestore
+    // جلب الطلبات وتقسيمها بالأيام
     function fetchOrders() {
       db.collection("orders").orderBy("timestamp", "desc").onSnapshot(snapshot => {
         const tbody = document.getElementById('ordersTableBody');
         tbody.innerHTML = '';
         
+        // 1. تجميع الطلبات حسب اليوم
+        const groupedOrders = {};
+
         snapshot.forEach(doc => {
           const order = doc.data();
           const orderId = doc.id; 
-          
-          // حفظ الطلب في المتغير
           window.allOrders[orderId] = order;
           
-          let statusBadge = '';
-          if(order.status === 'new') statusBadge = '<span class="status-new px-3 py-1 rounded-full text-xs">جديد</span>';
-          if(order.status === 'shipped') statusBadge = '<span class="status-shipped px-3 py-1 rounded-full text-xs">تم الشحن</span>';
-          if(order.status === 'delivered') statusBadge = '<span class="status-delivered px-3 py-1 rounded-full text-xs">تم التوصيل</span>';
+          // تحويل وقت الطلب لتاريخ مقروء (مثال: الأحد، 2 أغسطس 2026)
+          let dateStr = "طلبات قديمة";
+          if (order.timestamp) {
+            const d = new Date(order.timestamp);
+            dateStr = d.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+          }
 
-          const tr = document.createElement('tr');
-          tr.className = "border-b border-gray-700 hover:bg-gray-800 hover:bg-opacity-50 transition";
-          tr.innerHTML = `
-            <td class="p-4 font-bold text-orange-400">#${order.orderNumber}</td>
-            <td class="p-4">
-              <div>${order.customerName}</div>
-              <div class="text-sm text-gray-400" dir="ltr">${order.customerPhone}</div>
-            </td>
-            <td class="p-4 font-bold">${order.total} EGP</td>
-            <td class="p-4">
-              <select onchange="updateStatus('${orderId}', this.value)" class="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block p-2.5">
-                <option value="new" ${order.status === 'new' ? 'selected' : ''}>جديد</option>
-                <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>تم الشحن</option>
-                <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>تم التوصيل</option>
-              </select>
-            </td>
-            <td class="p-4 text-center flex justify-center gap-2">
-              <button onclick="viewDetails('${orderId}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm flex items-center justify-center">
-                تفاصيل
-              </button>
-              <button onclick="sendWhatsApp('${order.customerPhone}', '${order.customerName}', '${order.orderNumber}', '${order.status}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-1">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.012 2C6.466 2 1.96 6.486 1.956 12.015c0 1.767.458 3.492 1.332 5.012L2 22l5.127-1.337c1.464.799 3.125 1.22 4.88 1.22h.004c5.546 0 10.052-4.486 10.056-10.015A9.97 9.97 0 0019.124 4.93a9.92 9.92 0 00-7.112-2.93zm0 18.232h-.004a8.318 8.318 0 01-4.24-1.162l-.304-.18-3.155.827.842-3.076-.198-.315a8.27 8.27 0 01-1.272-4.43c.003-4.595 3.74-8.332 8.337-8.332 2.226 0 4.316.868 5.888 2.443a8.27 8.27 0 012.44 5.891c-.003 4.594-3.74 8.334-8.334 8.334zm4.568-6.225c-.25-.125-1.482-.732-1.712-.816-.23-.083-.398-.125-.565.125-.167.25-.648.816-.795.983-.146.167-.294.187-.544.062-.25-.125-1.058-.39-2.015-1.242-.745-.663-1.247-1.483-1.394-1.733-.146-.25-.015-.385.11-.51.112-.113.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.02-.438-.063-.125-.566-1.355-.776-1.855-.205-.487-.413-.42-.566-.428l-.483-.008c-.167 0-.44.062-.67.313-.23.25-.877.855-.877 2.085s.898 2.418 1.023 2.585c.125.167 1.765 2.693 4.276 3.778.598.258 1.065.412 1.43.528.6.19 1.144.163 1.572.099.482-.072 1.482-.605 1.692-1.19.21-.585.21-1.085.147-1.19-.063-.105-.23-.167-.48-.292z"/></svg>
-                مراسلة
-              </button>
+          // لو اليوم ده مش موجود في القايمة، اعمله وضيفله عداد للإجمالي
+          if (!groupedOrders[dateStr]) {
+            groupedOrders[dateStr] = { ordersList: [], dailyTotal: 0 };
+          }
+
+          groupedOrders[dateStr].ordersList.push({ id: orderId, data: order });
+          // تجميع مبيعات اليوم
+          groupedOrders[dateStr].dailyTotal += Number(order.total) || 0;
+        });
+
+        // 2. عرض الطلبات في الجدول متقسمة
+        for (const [dateName, group] of Object.entries(groupedOrders)) {
+          
+          // --- صف فاصل لكل يوم ---
+          const headerTr = document.createElement('tr');
+          headerTr.className = "bg-orange-900 bg-opacity-30 border-y border-orange-500 text-orange-200";
+          headerTr.innerHTML = `
+            <td colspan="5" class="p-3 text-right font-bold text-lg">
+              📅 ${dateName} <span class="float-left text-green-400">إجمالي اليوم: ${group.dailyTotal} ج.م</span>
             </td>
           `;
-          tbody.appendChild(tr);
-        });
+          tbody.appendChild(headerTr);
+
+          // --- طلبات اليوم ده ---
+          group.ordersList.forEach(item => {
+            const order = item.data;
+            const orderId = item.id;
+
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-gray-700 hover:bg-gray-800 hover:bg-opacity-50 transition";
+            tr.innerHTML = `
+              <td class="p-4 font-bold text-orange-400">#${order.orderNumber}</td>
+              <td class="p-4">
+                <div>${order.customerName}</div>
+                <div class="text-sm text-gray-400" dir="ltr">${order.customerPhone}</div>
+              </td>
+              <td class="p-4 font-bold">${order.total} EGP</td>
+              <td class="p-4">
+                <select onchange="updateStatus('${orderId}', this.value)" class="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block p-2.5">
+                  <option value="new" ${order.status === 'new' ? 'selected' : ''}>جديد</option>
+                  <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>تم الشحن</option>
+                  <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>تم التوصيل</option>
+                </select>
+              </td>
+              <td class="p-4 flex justify-center gap-2 flex-wrap">
+                <button onclick="viewDetails('${orderId}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm flex items-center justify-center" title="التفاصيل">
+                  📄
+                </button>
+                <button onclick="sendWhatsApp('${order.customerPhone}', '${order.customerName}', '${order.orderNumber}', '${order.status}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm flex items-center justify-center" title="مراسلة واتساب">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.012 2C6.466 2 1.96 6.486 1.956 12.015c0 1.767.458 3.492 1.332 5.012L2 22l5.127-1.337c1.464.799 3.125 1.22 4.88 1.22h.004c5.546 0 10.052-4.486 10.056-10.015A9.97 9.97 0 0019.124 4.93a9.92 9.92 0 00-7.112-2.93zm0 18.232h-.004a8.318 8.318 0 01-4.24-1.162l-.304-.18-3.155.827.842-3.076-.198-.315a8.27 8.27 0 01-1.272-4.43c.003-4.595 3.74-8.332 8.337-8.332 2.226 0 4.316.868 5.888 2.443a8.27 8.27 0 012.44 5.891c-.003 4.594-3.74 8.334-8.334 8.334zm4.568-6.225c-.25-.125-1.482-.732-1.712-.816-.23-.083-.398-.125-.565.125-.167.25-.648.816-.795.983-.146.167-.294.187-.544.062-.25-.125-1.058-.39-2.015-1.242-.745-.663-1.247-1.483-1.394-1.733-.146-.25-.015-.385.11-.51.112-.113.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.02-.438-.063-.125-.566-1.355-.776-1.855-.205-.487-.413-.42-.566-.428l-.483-.008c-.167 0-.44.062-.67.313-.23.25-.877.855-.877 2.085s.898 2.418 1.023 2.585c.125.167 1.765 2.693 4.276 3.778.598.258 1.065.412 1.43.528.6.19 1.144.163 1.572.099.482-.072 1.482-.605 1.692-1.19.21-.585.21-1.085.147-1.19-.063-.105-.23-.167-.48-.292z"/></svg>
+                </button>
+                <button onclick="deleteOrder('${orderId}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm flex items-center justify-center" title="حذف الطلب">
+                  🗑️
+                </button>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
       });
     }
 
