@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم | نار & توابل</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Tajawal', sans-serif; background-color: #1a1a2e; color: #fff; }
+    .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .status-new { background-color: #f59e0b; color: #fff; }
+    .status-shipped { background-color: #3b82f6; color: #fff; }
+    .status-delivered { background-color: #10b981; color: #fff; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+
+  <!-- ================= شاشة تسجيل الدخول ================= -->
+  <div id="loginScreen" class="glass-panel p-8 rounded-2xl w-full max-w-md text-center">
+    <div class="text-4xl mb-4">🔥</div>
+    <h2 class="text-2xl font-bold mb-6">نار & توابل - الإدارة</h2>
+    <input type="email" id="email" placeholder="البريد الإلكتروني" class="w-full mb-4 p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-orange-500">
+    <input type="password" id="password" placeholder="كلمة المرور" class="w-full mb-6 p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-orange-500">
+    <button onclick="login()" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+      تسجيل الدخول
+    </button>
+    <p id="errorMsg" class="text-red-400 mt-4 text-sm hidden"></p>
+  </div>
+
+  <!-- ================= لوحة التحكم (مخفية في البداية) ================= -->
+  <div id="dashboardScreen" class="hidden w-full min-h-screen flex flex-col md:flex-row">
+    
+    <!-- القائمة الجانبية -->
+    <aside class="w-full md:w-64 glass-panel p-6 flex flex-col">
+      <div class="flex items-center gap-3 mb-10">
+        <div class="text-3xl">🔥</div>
+        <h1 class="text-xl font-bold">Nar & Spice</h1>
+      </div>
+      <nav class="flex-1 space-y-2">
+        <a href="#" class="block p-3 rounded-lg bg-orange-600 font-bold">الطلبات (Orders)</a>
+        <!-- ممكن نضيف المنتجات هنا بعدين -->
+      </nav>
+      <button onclick="logout()" class="mt-auto p-3 rounded-lg border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition">
+        تسجيل الخروج
+      </button>
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="flex-1 p-6 md:p-10">
+      <h2 class="text-3xl font-bold mb-8">إدارة الطلبات</h2>
+      
+      <!-- جدول الطلبات -->
+      <div class="glass-panel rounded-2xl overflow-hidden overflow-x-auto">
+        <table class="w-full text-right border-collapse">
+          <thead>
+            <tr class="bg-gray-800 bg-opacity-50 text-gray-300">
+              <th class="p-4">رقم الطلب</th>
+              <th class="p-4">العميل</th>
+              <th class="p-4">الإجمالي</th>
+              <th class="p-4">الحالة</th>
+              <th class="p-4 text-center">إجراءات (واتساب)</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <!-- الطلبات هتظهر هنا من الداتابيز -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= سكربتات Firebase ================= -->
+  <!-- استخدام الإصدار 8 للسهولة في HTML مباشر -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+    // ⚠️ حط الـ Config بتاعك هنا بدل الكود ده
+    const firebaseConfig = {
+  apiKey: "AIzaSyAD8XEKgwId6rYr9j-iengayu92MObOz44",
+  authDomain: "nar-and-spice-db.firebaseapp.com",
+  projectId: "nar-and-spice-db",
+  storageBucket: "nar-and-spice-db.firebasestorage.app",
+  messagingSenderId: "730387083482",
+  appId: "1:730387083482:web:f19e20064ee188bc1775e3",
+  measurementId: "G-FGJPSTR7YQ"
+};
+
+    // تهيئة Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const loginScreen = document.getElementById('loginScreen');
+    const dashboardScreen = document.getElementById('dashboardScreen');
+    const errorMsg = document.getElementById('errorMsg');
+
+    // مراقبة حالة تسجيل الدخول
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginScreen.classList.add('hidden');
+        dashboardScreen.classList.remove('hidden');
+        dashboardScreen.classList.add('flex');
+        fetchOrders();
+      } else {
+        loginScreen.classList.remove('hidden');
+        dashboardScreen.classList.add('hidden');
+        dashboardScreen.classList.remove('flex');
+      }
+    });
+
+    // دالة تسجيل الدخول
+    function login() {
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
+      auth.signInWithEmailAndPassword(email, pass)
+        .catch(error => {
+          errorMsg.textContent = "بيانات الدخول غير صحيحة!";
+          errorMsg.classList.remove('hidden');
+        });
+    }
+
+    // دالة تسجيل الخروج
+    function logout() {
+      auth.signOut();
+    }
+
+    // جلب الطلبات من Firestore
+    function fetchOrders() {
+      db.collection("orders").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+        const tbody = document.getElementById('ordersTableBody');
+        tbody.innerHTML = '';
+        
+        snapshot.forEach(doc => {
+          const order = doc.data();
+          const orderId = doc.id; // الـ ID بتاع الفايربيز
+          
+          let statusBadge = '';
+          if(order.status === 'new') statusBadge = '<span class="status-new px-3 py-1 rounded-full text-xs">جديد</span>';
+          if(order.status === 'shipped') statusBadge = '<span class="status-shipped px-3 py-1 rounded-full text-xs">تم الشحن</span>';
+          if(order.status === 'delivered') statusBadge = '<span class="status-delivered px-3 py-1 rounded-full text-xs">تم التوصيل</span>';
+
+          const tr = document.createElement('tr');
+          tr.className = "border-b border-gray-700 hover:bg-gray-800 hover:bg-opacity-50 transition";
+          tr.innerHTML = `
+            <td class="p-4 font-bold text-orange-400">#${order.orderNumber}</td>
+            <td class="p-4">
+              <div>${order.customerName}</div>
+              <div class="text-sm text-gray-400" dir="ltr">${order.customerPhone}</div>
+            </td>
+            <td class="p-4 font-bold">${order.total} EGP</td>
+            <td class="p-4">
+              <select onchange="updateStatus('${orderId}', this.value)" class="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block p-2.5">
+                <option value="new" ${order.status === 'new' ? 'selected' : ''}>جديد</option>
+                <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>تم الشحن</option>
+                <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>تم التوصيل</option>
+              </select>
+            </td>
+            <td class="p-4 text-center">
+              <button onclick="sendWhatsApp('${order.customerPhone}', '${order.customerName}', '${order.orderNumber}', '${order.status}')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-2 mx-auto">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.012 2C6.466 2 1.96 6.486 1.956 12.015c0 1.767.458 3.492 1.332 5.012L2 22l5.127-1.337c1.464.799 3.125 1.22 4.88 1.22h.004c5.546 0 10.052-4.486 10.056-10.015A9.97 9.97 0 0019.124 4.93a9.92 9.92 0 00-7.112-2.93zm0 18.232h-.004a8.318 8.318 0 01-4.24-1.162l-.304-.18-3.155.827.842-3.076-.198-.315a8.27 8.27 0 01-1.272-4.43c.003-4.595 3.74-8.332 8.337-8.332 2.226 0 4.316.868 5.888 2.443a8.27 8.27 0 012.44 5.891c-.003 4.594-3.74 8.334-8.334 8.334zm4.568-6.225c-.25-.125-1.482-.732-1.712-.816-.23-.083-.398-.125-.565.125-.167.25-.648.816-.795.983-.146.167-.294.187-.544.062-.25-.125-1.058-.39-2.015-1.242-.745-.663-1.247-1.483-1.394-1.733-.146-.25-.015-.385.11-.51.112-.113.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.02-.438-.063-.125-.566-1.355-.776-1.855-.205-.487-.413-.42-.566-.428l-.483-.008c-.167 0-.44.062-.67.313-.23.25-.877.855-.877 2.085s.898 2.418 1.023 2.585c.125.167 1.765 2.693 4.276 3.778.598.258 1.065.412 1.43.528.6.19 1.144.163 1.572.099.482-.072 1.482-.605 1.692-1.19.21-.585.21-1.085.147-1.19-.063-.105-.23-.167-.48-.292z"/></svg>
+                مراسلة
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    // تحديث حالة الطلب في الداتابيز
+    function updateStatus(docId, newStatus) {
+      db.collection("orders").doc(docId).update({
+        status: newStatus
+      }).then(() => {
+        console.log("تم تحديث الحالة بنجاح");
+      });
+    }
+
+    // إرسال رسالة واتساب
+    function sendWhatsApp(phone, name, orderNum, status) {
+      // تظبيط رقم التليفون (بافتراض إن الأرقام مصرية)
+      let formattedPhone = phone;
+      if (phone.startsWith('01')) {
+        formattedPhone = '+2' + phone;
+      }
+      
+      let message = `أهلاً بيك يا ${name} 👋\nحبينا نبلغك بخصوص طلبك رقم #${orderNum} من مطعم نار & توابل 🔥\n\n`;
+      
+      // هنقرا الحالة من الـ dropdown مباشرة
+      const selectElement = event.target.closest('tr').querySelector('select');
+      const currentStatus = selectElement.value;
+
+      if (currentStatus === 'new') {
+        message += "طلبك تم استلامه وجاري تجهيزه بكل حب 🍗";
+      } else if (currentStatus === 'shipped') {
+        message += "طلبك خرج للتوصيل وهو في الطريق ليك دلوقتي 🛵";
+      } else if (currentStatus === 'delivered') {
+        message += "نتمنى تكون الوجبة عجبتك! بالهنا والشفا 🥰";
+      }
+
+      const whatsappUrl = `https://wa.me/${formattedPhone.replace('+', '')}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    }
+  </script>
+</body>
+</html>
