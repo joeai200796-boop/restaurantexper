@@ -129,6 +129,9 @@ function login() {
       auth.signOut();
     }
 
+    // متغير لحفظ بيانات الطلبات عشان نقدر نعرض تفاصيلها
+    window.allOrders = {};
+
     // جلب الطلبات من Firestore
     function fetchOrders() {
       db.collection("orders").orderBy("timestamp", "desc").onSnapshot(snapshot => {
@@ -137,7 +140,10 @@ function login() {
         
         snapshot.forEach(doc => {
           const order = doc.data();
-          const orderId = doc.id; // الـ ID بتاع الفايربيز
+          const orderId = doc.id; 
+          
+          // حفظ الطلب في المتغير
+          window.allOrders[orderId] = order;
           
           let statusBadge = '';
           if(order.status === 'new') statusBadge = '<span class="status-new px-3 py-1 rounded-full text-xs">جديد</span>';
@@ -160,8 +166,11 @@ function login() {
                 <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>تم التوصيل</option>
               </select>
             </td>
-            <td class="p-4 text-center">
-              <button onclick="sendWhatsApp('${order.customerPhone}', '${order.customerName}', '${order.orderNumber}', '${order.status}')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-2 mx-auto">
+            <td class="p-4 text-center flex justify-center gap-2">
+              <button onclick="viewDetails('${orderId}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm flex items-center justify-center">
+                تفاصيل
+              </button>
+              <button onclick="sendWhatsApp('${order.customerPhone}', '${order.customerName}', '${order.orderNumber}', '${order.status}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-1">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.012 2C6.466 2 1.96 6.486 1.956 12.015c0 1.767.458 3.492 1.332 5.012L2 22l5.127-1.337c1.464.799 3.125 1.22 4.88 1.22h.004c5.546 0 10.052-4.486 10.056-10.015A9.97 9.97 0 0019.124 4.93a9.92 9.92 0 00-7.112-2.93zm0 18.232h-.004a8.318 8.318 0 01-4.24-1.162l-.304-.18-3.155.827.842-3.076-.198-.315a8.27 8.27 0 01-1.272-4.43c.003-4.595 3.74-8.332 8.337-8.332 2.226 0 4.316.868 5.888 2.443a8.27 8.27 0 012.44 5.891c-.003 4.594-3.74 8.334-8.334 8.334zm4.568-6.225c-.25-.125-1.482-.732-1.712-.816-.23-.083-.398-.125-.565.125-.167.25-.648.816-.795.983-.146.167-.294.187-.544.062-.25-.125-1.058-.39-2.015-1.242-.745-.663-1.247-1.483-1.394-1.733-.146-.25-.015-.385.11-.51.112-.113.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.02-.438-.063-.125-.566-1.355-.776-1.855-.205-.487-.413-.42-.566-.428l-.483-.008c-.167 0-.44.062-.67.313-.23.25-.877.855-.877 2.085s.898 2.418 1.023 2.585c.125.167 1.765 2.693 4.276 3.778.598.258 1.065.412 1.43.528.6.19 1.144.163 1.572.099.482-.072 1.482-.605 1.692-1.19.21-.585.21-1.085.147-1.19-.063-.105-.23-.167-.48-.292z"/></svg>
                 مراسلة
               </button>
@@ -170,6 +179,16 @@ function login() {
           tbody.appendChild(tr);
         });
       });
+    }
+
+    // دالة عرض التفاصيل
+    function viewDetails(orderId) {
+      const order = window.allOrders[orderId];
+      if (order && order.orderDetails) {
+        alert(order.orderDetails); // هيعرض الرسالة بنفس تنسيق الواتساب والتليجرام
+      } else {
+        alert("تفاصيل هذا الطلب غير متوفرة (غالباً طلب قديم).");
+      }
     }
 
     // تحديث حالة الطلب في الداتابيز
@@ -181,9 +200,8 @@ function login() {
       });
     }
 
-    // إرسال رسالة واتساب
+    // إرسال رسالة واتساب للعميل بالتحديثات
     function sendWhatsApp(phone, name, orderNum, status) {
-      // تظبيط رقم التليفون (بافتراض إن الأرقام مصرية)
       let formattedPhone = phone;
       if (phone.startsWith('01')) {
         formattedPhone = '+2' + phone;
@@ -191,7 +209,6 @@ function login() {
       
       let message = `أهلاً بيك يا ${name} 👋\nحبينا نبلغك بخصوص طلبك رقم #${orderNum} من مطعم نار & توابل 🔥\n\n`;
       
-      // هنقرا الحالة من الـ dropdown مباشرة
       const selectElement = event.target.closest('tr').querySelector('select');
       const currentStatus = selectElement.value;
 
