@@ -1691,6 +1691,23 @@ document.getElementById('confirmOrderBtn').addEventListener('click', ()=>{
     checkoutFormView.style.display = 'none';
     successView.classList.add('show');
   }
+  // 2. إرسال بيانات الطلب لقاعدة بيانات Firebase عشان تظهر في لوحة التحكم
+  const { total } = cartTotals(); // جلب إجمالي السعر
+  
+  db.collection("orders").add({
+    orderNumber: lastOrderNum, // رقم الطلب اللي هيظهر في اللوحة
+    customerName: name,        // اسم العميل
+    customerPhone: phone,      // رقم العميل
+    customerAddress: address,  // العنوان
+    total: total,              // الإجمالي
+    paymentMethod: selectedPay,// طريقة الدفع (كاش/بطاقة)
+    status: 'new',             // حالة الطلب الافتراضية (جديد)
+    timestamp: firebase.firestore.FieldValue.serverTimestamp() // وقت الطلب الفعلي
+  }).then(() => {
+    console.log("تم حفظ الطلب في قاعدة البيانات بنجاح");
+  }).catch((error) => {
+    console.error("حدث خطأ أثناء حفظ الطلب: ", error);
+  });
   // تصفير السلة
   cart = {}; renderMenu(); renderCart();
 
