@@ -1162,10 +1162,6 @@ background: transparent;
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// إعدادات Firebase للموقع
 const firebaseConfig = {
   apiKey: "AIzaSyAD8XEkgwId6rYr9j-iengayu92MObOz44",
   authDomain: "nar-and-spice-db.firebaseapp.com",
@@ -1176,113 +1172,78 @@ const firebaseConfig = {
   measurementId: "G-FGJP5TR7YQ"
 };
 
-// تشغيل Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const db = firebase.firestore();
+
 /* ============================================================
-   DATA
+   المنيو الأساسي (هيفضل ثابت دايماً)
 ============================================================ */
-const MENU = [
-  {
-    id:'b1', cat:'burgers', spice:2, badge:{ar:'الأكثر طلباً', en:'Best Seller'},
-    name:{ar:'برجر فاير كرسبي', en:'Fire Crispy Burger'},
-    desc:{ar:'فيليه دجاج مقرمش، جبنة شيدر، صوص فاير سري، خس وطماطم.', en:'Crispy chicken fillet, cheddar, secret fire sauce, lettuce & tomato.'},
-    price:145,
-    img:'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=500&q=80'
-  },
-  {
-    id:'b2', cat:'burgers', spice:1,
-    name:{ar:'برجر كلاسيك تشيز', en:'Classic Cheese Burger'},
-    desc:{ar:'فيليه دجاج مقلي ذهبي مع جبنة وصوص رانش كريمي.', en:'Golden fried chicken fillet with cheese and creamy ranch sauce.'},
-    price:130,
-    img:'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500&q=80'
-  },
-  {
-    id:'b3', cat:'burgers', spice:4,
-    name:{ar:'برجر النار الجهنمي', en:'Inferno Burger'},
-    desc:{ar:'فيليه دجاج متبل بفلفل الجوست بيبر، صوص هابانيرو حار.', en:'Ghost-pepper marinated fillet, fiery habanero sauce.'},
-    price:155,
-    img:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80'
-  },
-  {
-    id:'k1', cat:'buckets', spice:2, badge:{ar:'عرض عائلي', en:'Family Deal'},
-    name:{ar:'وجبة عائلية - 8 قطع', en:'Family Bucket – 8 pcs'},
-    desc:{ar:'8 قطع دجاج مقرمش، بطاطس كبيرة، 2 صوص، 2 مشروب.', en:'8 crispy chicken pieces, large fries, 2 dips, 2 drinks.'},
-    price:380,
-    img:'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=500&q=80'
-  },
-  {
-    id:'k2', cat:'buckets', spice:3,
-    name:{ar:'وجبة سولو سبايسي', en:'Solo Spicy Box'},
-    desc:{ar:'4 قطع دجاج حار، بطاطس صغيرة، صوص واحد، مشروب.', en:'4 spicy chicken pieces, small fries, one dip, drink.'},
-    price:175,
-    img:'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80'
-  },
-  {
-    id:'k3', cat:'buckets', spice:1,
-    name:{ar:'تندرز كومبو', en:'Tenders Combo'},
-    desc:{ar:'5 قطع تندرز مقرمشة، بطاطس، صوص هني مسترد.', en:'5 crispy chicken tenders, fries, honey mustard dip.'},
-    price:160,
-    img:'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&q=80'
-  },
-  {
-    id:'s1', cat:'sides', spice:0,
-    name:{ar:'بطاطس مقرمشة', en:'Crispy Fries'},
-    desc:{ar:'بطاطس مقلية ذهبية مع رشة بهارات خاصة.', en:'Golden fries tossed in our house spice blend.'},
-    price:45,
-    img:'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80'
-  },
-  {
-    id:'s2', cat:'sides', spice:1,
-    name:{ar:'حلقات بصل مقرمشة', en:'Crispy Onion Rings'},
-    desc:{ar:'حلقات بصل مقرمشة مع صوص باربكيو.', en:'Crunchy onion rings with smoky BBQ dip.'},
-    price:50,
-    img:'https://images.unsplash.com/photo-1639024471283-03518883512d?w=500&q=80'
-  },
-  {
-    id:'s3', cat:'sides', spice:0,
-    name:{ar:'سلطة كول سلو', en:'Coleslaw Salad'},
-    desc:{ar:'سلطة كرنب طازة بصوص كريمي خفيف.', en:'Fresh cabbage slaw in a light creamy dressing.'},
-    price:35,
-    img:'https://images.unsplash.com/photo-1625944230945-1b7dd3b949ab?w=500&q=80'
-  },
-  {
-    id:'d1', cat:'drinks', spice:0,
-    name:{ar:'بيبسي', en:'Pepsi'},
-    desc:{ar:'مشروب غازي بارد 330 مل.', en:'Chilled soft drink, 330ml can.'},
-    price:25,
-    img:'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&q=80'
-  },
-  {
-    id:'d2', cat:'drinks', spice:0,
-    name:{ar:'ليموناضة فريش', en:'Fresh Lemonade'},
-    desc:{ar:'عصير ليمون طازة بالنعناع.', en:'Freshly squeezed lemonade with mint.'},
-    price:38,
-    img:'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=500&q=80'
-  },
-  {
-    id:'d3', cat:'drinks', spice:0,
-    name:{ar:'ميلك شيك فانيليا', en:'Vanilla Milkshake'},
-    desc:{ar:'ميلك شيك كريمي بنكهة الفانيليا الطبيعية.', en:'Creamy milkshake with natural vanilla flavor.'},
-    price:55,
-    img:'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&q=80'
-  }
+const DEFAULT_MENU = [
+  { id:'b1', cat:'burgers', spice:2, badge:{ar:'الأكثر طلباً', en:'Best Seller'}, name:{ar:'برجر فاير كرسبي', en:'Fire Crispy Burger'}, desc:{ar:'فيليه دجاج مقرمش، جبنة شيدر، صوص فاير سري، خس وطماطم.', en:'Crispy chicken fillet, cheddar, secret fire sauce, lettuce & tomato.'}, price:145, img:'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=500&q=80' },
+  { id:'b2', cat:'burgers', spice:1, name:{ar:'برجر كلاسيك تشيز', en:'Classic Cheese Burger'}, desc:{ar:'فيليه دجاج مقلي ذهبي مع جبنة وصوص رانش كريمي.', en:'Golden fried chicken fillet with cheese and creamy ranch sauce.'}, price:130, img:'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500&q=80' },
+  { id:'b3', cat:'burgers', spice:4, name:{ar:'برجر النار الجهنمي', en:'Inferno Burger'}, desc:{ar:'فيليه دجاج متبل بفلفل الجوست بيبر، صوص هابانيرو حار.', en:'Ghost-pepper marinated fillet, fiery habanero sauce.'}, price:155, img:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80' },
+  { id:'k1', cat:'buckets', spice:2, badge:{ar:'عرض عائلي', en:'Family Deal'}, name:{ar:'وجبة عائلية - 8 قطع', en:'Family Bucket – 8 pcs'}, desc:{ar:'8 قطع دجاج مقرمش، بطاطس كبيرة، 2 صوص، 2 مشروب.', en:'8 crispy chicken pieces, large fries, 2 dips, 2 drinks.'}, price:380, img:'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=500&q=80' },
+  { id:'k2', cat:'buckets', spice:3, name:{ar:'وجبة سولو سبايسي', en:'Solo Spicy Box'}, desc:{ar:'4 قطع دجاج حار، بطاطس صغيرة، صوص واحد، مشروب.', en:'4 spicy chicken pieces, small fries, one dip, drink.'}, price:175, img:'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80' },
+  { id:'k3', cat:'buckets', spice:1, name:{ar:'تندرز كومبو', en:'Tenders Combo'}, desc:{ar:'5 قطع تندرز مقرمشة، بطاطس، صوص هني مسترد.', en:'5 crispy chicken tenders, fries, honey mustard dip.'}, price:160, img:'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&q=80' },
+  { id:'s1', cat:'sides', spice:0, name:{ar:'بطاطس مقرمشة', en:'Crispy Fries'}, desc:{ar:'بطاطس مقلية ذهبية مع رشة بهارات خاصة.', en:'Golden fries tossed in our house spice blend.'}, price:45, img:'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80' },
+  { id:'s2', cat:'sides', spice:1, name:{ar:'حلقات بصل مقرمشة', en:'Crispy Onion Rings'}, desc:{ar:'حلقات بصل مقرمشة مع صوص باربكيو.', en:'Crunchy onion rings with smoky BBQ dip.'}, price:50, img:'https://images.unsplash.com/photo-1639024471283-03518883512d?w=500&q=80' },
+  { id:'s3', cat:'sides', spice:0, name:{ar:'سلطة كول سلو', en:'Coleslaw Salad'}, desc:{ar:'سلطة كرنب طازة بصوص كريمي خفيف.', en:'Fresh cabbage slaw in a light creamy dressing.'}, price:35, img:'https://images.unsplash.com/photo-1625944230945-1b7dd3b949ab?w=500&q=80' },
+  { id:'d1', cat:'drinks', spice:0, name:{ar:'بيبسي', en:'Pepsi'}, desc:{ar:'مشروب غازي بارد 330 مل.', en:'Chilled soft drink, 330ml can.'}, price:25, img:'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&q=80' },
+  { id:'d2', cat:'drinks', spice:0, name:{ar:'ليموناضة فريش', en:'Fresh Lemonade'}, desc:{ar:'عصير ليمون طازة بالنعناع.', en:'Freshly squeezed lemonade with mint.'}, price:38, img:'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=500&q=80' },
+  { id:'d3', cat:'drinks', spice:0, name:{ar:'ميلك شيك فانيليا', en:'Vanilla Milkshake'}, desc:{ar:'ميلك شيك كريمي بنكهة الفانيليا الطبيعية.', en:'Creamy milkshake with natural vanilla flavor.'}, price:55, img:'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&q=80' }
 ];
 
+let MENU = [];
 const DELIVERY_FEE = 25;
-const RESTAURANT_WHATSAPP = '201035419531'; // رقم واتساب المطعم (بالكود الدولي، بدون + أو أصفار)
-
-/* ============================================================
-   STATE (تم تغيير اللغة الافتراضية لـ en)
-============================================================ */
+const RESTAURANT_WHATSAPP = '201035419531';
 let lang = 'en'; 
 let activeCat = 'all';
-let cart = {}; // id -> qty
+let cart = {}; 
 
 /* ============================================================
-   LANGUAGE
+   دمج الأصناف المضافة من لوحة التحكم مع الأساسي
+============================================================ */
+function mapCategory(arabicCategory) {
+  if (arabicCategory === 'وجبات') return 'buckets';
+  if (arabicCategory === 'سندوتشات') return 'burgers';
+  if (arabicCategory === 'مشروبات') return 'drinks';
+  if (arabicCategory === 'إضافات') return 'sides';
+  return 'all'; 
+}
+
+function fetchMenuFromFirebase() {
+  db.collection("menu").onSnapshot((snapshot) => {
+    MENU = [...DEFAULT_MENU]; // نبدأ بالأساسي دايماً
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.status !== 'out_of_stock') {
+        MENU.push({
+          id: doc.id,
+          cat: mapCategory(data.category), 
+          name: (data.name && typeof data.name === 'object') ? data.name : { ar: data.name, en: data.name }, 
+          desc: data.desc ? { ar: data.desc.ar || 'صنف مضاف حديثاً', en: data.desc.en || 'Newly added item' } : { ar: 'صنف مضاف حديثاً', en: 'Newly added item' }, 
+          price: data.price,
+          img: data.img || 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500&q=80', 
+          spice: 1
+        });
+      }
+    });
+    renderMenu(); 
+  }, (error) => {
+    console.error(error);
+    MENU = [...DEFAULT_MENU]; // لو حصل خطأ نعرض الأساسي بس
+    renderMenu();
+  });
+}
+
+fetchMenuFromFirebase();
+
+// تثبيت صور الواجهة الرئيسية عشان متختفيش
+document.getElementById('heroImg').src = 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=900&q=80';
+document.getElementById('aboutImg').src = 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=800&q=80';
+
+/* ============================================================
+   باقي دوال الموقع (اللغة، السلة، الأوردرات)
 ============================================================ */
 const langToggle = document.getElementById('langToggle');
 const langToggleText = document.getElementById('langToggleText');
@@ -1292,12 +1253,9 @@ function applyLang(){
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   document.body.classList.toggle('lang-en', lang === 'en');
   langToggleText.textContent = lang === 'ar' ? 'EN' : 'ع';
-
   document.querySelectorAll('[data-ar][data-en]').forEach(el=>{
     el.textContent = el.getAttribute(lang === 'ar' ? 'data-ar' : 'data-en');
   });
-  document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(()=>{});
-
   renderMenu();
   renderCart();
 }
@@ -1307,54 +1265,26 @@ langToggle.addEventListener('click', ()=>{
   applyLang();
 });
 
-/* ============================================================
-   MOBILE NAV (SIDEBAR DRAWER)
-============================================================ */
 const burgerToggle = document.getElementById('burgerToggle');
 const navLinks = document.getElementById('navLinks');
 const navOverlay = document.getElementById('navOverlay');
 const navCloseBtn = document.getElementById('navCloseBtn');
 
-function openNav() {
-  navLinks.classList.add('open');
-  if(navOverlay) navOverlay.classList.add('show');
-  document.body.style.overflow = 'hidden'; // منع سكرول الموقع والقائمة مفتوحة
-}
-
-function closeNav() {
-  navLinks.classList.remove('open');
-  if(navOverlay) navOverlay.classList.remove('show');
-  document.body.style.overflow = ''; // تشغيل السكرول تاني
-}
+function openNav() { navLinks.classList.add('open'); if(navOverlay) navOverlay.classList.add('show'); document.body.style.overflow = 'hidden'; }
+function closeNav() { navLinks.classList.remove('open'); if(navOverlay) navOverlay.classList.remove('show'); document.body.style.overflow = ''; }
 
 if(burgerToggle) burgerToggle.addEventListener('click', openNav);
 if(navCloseBtn) navCloseBtn.addEventListener('click', closeNav);
 if(navOverlay) navOverlay.addEventListener('click', closeNav);
+navLinks.querySelectorAll('a').forEach(a => { a.addEventListener('click', closeNav); });
 
-// إغلاق القائمة لما العميل يضغط على أي رابط ينتقل بيه
-navLinks.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', closeNav);
-});
-
-/* ============================================================
-   HERO / ABOUT IMAGES
-============================================================ */
-document.getElementById('heroImg').src = MENU[0].img.replace('w=500','w=900');
-document.getElementById('aboutImg').src = 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=800&q=80';
-
-/* ============================================================
-   MENU RENDER
-============================================================ */
 const menuGrid = document.getElementById('menuGrid');
 const menuTabs = document.getElementById('menuTabs');
 
 function flameHtml(level){
   let html = '<span class="menu-card-flames">';
-  for(let i=1;i<=4;i++){
-    html += `<span class="${i<=level?'on':''}">🌶️</span>`;
-  }
-  html += '</span>';
-  return html;
+  for(let i=1;i<=4;i++){ html += `<span class="${i<=level?'on':''}">🌶️</span>`; }
+  html += '</span>'; return html;
 }
 
 function renderMenu(){
@@ -1381,9 +1311,7 @@ function renderMenu(){
     </div>`;
   }).join('');
 
-  menuGrid.querySelectorAll('.add-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=> addToCart(btn.dataset.id));
-  });
+  menuGrid.querySelectorAll('.add-btn').forEach(btn=>{ btn.addEventListener('click', ()=> addToCart(btn.dataset.id)); });
 }
 
 menuTabs.querySelectorAll('.menu-tab').forEach(tab=>{
@@ -1395,9 +1323,6 @@ menuTabs.querySelectorAll('.menu-tab').forEach(tab=>{
   });
 });
 
-/* ============================================================
-   CART LOGIC
-============================================================ */
 const cartDrawer = document.getElementById('cartDrawer');
 const overlay = document.getElementById('overlay');
 const cartItemsEl = document.getElementById('cartItems');
@@ -1407,39 +1332,16 @@ const deliveryVal = document.getElementById('deliveryVal');
 const totalVal = document.getElementById('totalVal');
 const checkoutBtn = document.getElementById('checkoutBtn');
 
-function moneyFmt(n){
-  return `${n} ${lang==='ar'?'ج.م':'EGP'}`;
-}
-
+function moneyFmt(n){ return `${n} ${lang==='ar'?'ج.م':'EGP'}`; }
 function getItem(id){ return MENU.find(m=>m.id===id); }
 
 function addToCart(id){
-  cart[id] = (cart[id]||0) + 1;
-  renderMenu();
-  renderCart();
-  bumpCount();
-  showToast(lang==='ar' ? `تمت إضافة ${getItem(id).name.ar}` : `Added ${getItem(id).name.en}`);
+  cart[id] = (cart[id]||0) + 1; renderMenu(); renderCart(); bumpCount();
+  const item = getItem(id); if(item) showToast(lang==='ar' ? `تمت إضافة ${item.name.ar}` : `Added ${item.name.en}`);
 }
-
-function changeQty(id, delta){
-  if(!cart[id]) return;
-  cart[id] += delta;
-  if(cart[id] <= 0) delete cart[id];
-  renderMenu();
-  renderCart();
-}
-
-function removeItem(id){
-  delete cart[id];
-  renderMenu();
-  renderCart();
-}
-
-function bumpCount(){
-  cartCountEl.classList.remove('bump');
-  void cartCountEl.offsetWidth;
-  cartCountEl.classList.add('bump');
-}
+function changeQty(id, delta){ if(!cart[id]) return; cart[id] += delta; if(cart[id] <= 0) delete cart[id]; renderMenu(); renderCart(); }
+function removeItem(id){ delete cart[id]; renderMenu(); renderCart(); }
+function bumpCount(){ cartCountEl.classList.remove('bump'); void cartCountEl.offsetWidth; cartCountEl.classList.add('bump'); }
 
 function cartTotals(){
   let subtotal = 0, count = 0;
@@ -1465,8 +1367,7 @@ function renderCart(){
     checkoutBtn.disabled = true;
   } else {
     cartItemsEl.innerHTML = Object.entries(cart).map(([id,qty])=>{
-      const item = getItem(id);
-      if(!item) return '';
+      const item = getItem(id); if(!item) return '';
       return `
       <div class="cart-item">
         <img src="${item.img}" alt="${item.name[lang]}">
@@ -1475,9 +1376,7 @@ function renderCart(){
           <span class="cart-item-price">${moneyFmt(item.price)}</span>
           <div class="cart-item-row">
             <div class="qty-ctrl">
-              <button data-act="dec" data-id="${id}" aria-label="Decrease">−</button>
-              <span>${qty}</span>
-              <button data-act="inc" data-id="${id}" aria-label="Increase">+</button>
+              <button data-act="dec" data-id="${id}">−</button><span>${qty}</span><button data-act="inc" data-id="${id}">+</button>
             </div>
             <button class="remove-btn" data-act="rm" data-id="${id}">${lang==='ar'?'حذف':'Remove'}</button>
           </div>
@@ -1486,11 +1385,7 @@ function renderCart(){
     }).join('');
     checkoutBtn.disabled = false;
   }
-
-  subtotalVal.textContent = moneyFmt(subtotal);
-  deliveryVal.textContent = moneyFmt(delivery);
-  totalVal.textContent = moneyFmt(total);
-
+  subtotalVal.textContent = moneyFmt(subtotal); deliveryVal.textContent = moneyFmt(delivery); totalVal.textContent = moneyFmt(total);
   cartItemsEl.querySelectorAll('[data-act]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const id = btn.dataset.id;
@@ -1501,37 +1396,19 @@ function renderCart(){
   });
 }
 
-function openCart(){
-  cartDrawer.classList.add('open');
-  overlay.classList.add('show');
-}
-function closeCart(){
-  cartDrawer.classList.remove('open');
-  overlay.classList.remove('show');
-}
-
+function openCart(){ cartDrawer.classList.add('open'); overlay.classList.add('show'); }
+function closeCart(){ cartDrawer.classList.remove('open'); overlay.classList.remove('show'); }
 document.getElementById('cartOpenBtn').addEventListener('click', openCart);
 document.getElementById('cartCloseBtn').addEventListener('click', closeCart);
 overlay.addEventListener('click', ()=>{ closeCart(); closeModal(); });
 
-/* ============================================================
-   TOAST
-============================================================ */
 const toast = document.getElementById('toast');
 const toastText = document.getElementById('toastText');
 let toastTimer;
-function showToast(msg){
-  toastText.textContent = msg;
-  toast.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=> toast.classList.remove('show'), 2200);
-}
+function showToast(msg){ toastText.textContent = msg; toast.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(()=> toast.classList.remove('show'), 2200); }
 
-/* ============================================================
-   CHECKOUT MODAL
-============================================================ */
 const modalOverlay = document.getElementById('modalOverlay');
-let selectedOrderMethod = 'auto'; // هتشيل قيمة 'wa' أو 'auto'
+let selectedOrderMethod = 'auto'; 
 const checkoutFormView = document.getElementById('checkoutFormView');
 const successView = document.getElementById('successView');
 let selectedPay = 'cash';
@@ -1539,197 +1416,80 @@ let selectedPay = 'cash';
 document.getElementById('checkoutBtn').addEventListener('click', ()=>{
   if(checkoutBtn.disabled) return;
   modalOverlay.classList.add('show');
-  
-  // نظهر شاشة الاختيار ونخفي الفورم وشاشة النجاح
   document.getElementById('orderMethodView').style.display = 'block';
   checkoutFormView.style.display = 'none';
   successView.classList.remove('show');
 });
-// لو اختار واتساب
+
 document.getElementById('chooseWaBtn').addEventListener('click', () => {
   selectedOrderMethod = 'wa';
-  document.getElementById('orderMethodView').style.display = 'none';
-  document.getElementById('checkoutFormView').style.display = 'block';
-  
-  // تحويل زرار التأكيد للأخضر الجريديانت (الشيك)
+  document.getElementById('orderMethodView').style.display = 'none'; document.getElementById('checkoutFormView').style.display = 'block';
   const confirmBtn = document.getElementById('confirmOrderBtn');
-  confirmBtn.style.background = 'linear-gradient(135deg, #25D366, #128C7E)';
-  confirmBtn.style.boxShadow = '0 10px 28px rgba(37, 211, 102, 0.35)';
-  
-  // إضافة لوجو واتساب أبيض
-const waLogo = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin: 0 4px;"><path d="M12.012 2C6.466 2 1.96 6.486 1.956 12.015c0 1.767.458 3.492 1.332 5.012L2 22l5.127-1.337c1.464.799 3.125 1.22 4.88 1.22h.004c5.546 0 10.052-4.486 10.056-10.015A9.97 9.97 0 0019.124 4.93a9.92 9.92 0 00-7.112-2.93zm0 18.232h-.004a8.318 8.318 0 01-4.24-1.162l-.304-.18-3.155.827.842-3.076-.198-.315a8.27 8.27 0 01-1.272-4.43c.003-4.595 3.74-8.332 8.337-8.332 2.226 0 4.316.868 5.888 2.443a8.27 8.27 0 012.44 5.891c-.003 4.594-3.74 8.334-8.334 8.334zm4.568-6.225c-.25-.125-1.482-.732-1.712-.816-.23-.083-.398-.125-.565.125-.167.25-.648.816-.795.983-.146.167-.294.187-.544.062-.25-.125-1.058-.39-2.015-1.242-.745-.663-1.247-1.483-1.394-1.733-.146-.25-.015-.385.11-.51.112-.113.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.02-.438-.063-.125-.566-1.355-.776-1.855-.205-.487-.413-.42-.566-.428l-.483-.008c-.167 0-.44.062-.67.313-.23.25-.877.855-.877 2.085s.898 2.418 1.023 2.585c.125.167 1.765 2.693 4.276 3.778.598.258 1.065.412 1.43.528.6.19 1.144.163 1.572.099.482-.072 1.482-.605 1.692-1.19.21-.585.21-1.085.147-1.19-.063-.105-.23-.167-.48-.292z"/></svg>`;  
+  confirmBtn.style.background = 'linear-gradient(135deg, #25D366, #128C7E)'; confirmBtn.style.boxShadow = '0 10px 28px rgba(37, 211, 102, 0.35)';
+  const waLogo = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin: 0 4px;"><path d="M12.012 2C6.466 2 1.96 6.486 1.956 12.015c0 1.767.458 3.492 1.332 5.012L2 22l5.127-1.337c1.464.799 3.125 1.22 4.88 1.22h.004c5.546 0 10.052-4.486 10.056-10.015A9.97 9.97 0 0019.124 4.93a9.92 9.92 0 00-7.112-2.93zm0 18.232h-.004a8.318 8.318 0 01-4.24-1.162l-.304-.18-3.155.827.842-3.076-.198-.315a8.27 8.27 0 01-1.272-4.43c.003-4.595 3.74-8.332 8.337-8.332 2.226 0 4.316.868 5.888 2.443a8.27 8.27 0 012.44 5.891c-.003 4.594-3.74 8.334-8.334 8.334zm4.568-6.225c-.25-.125-1.482-.732-1.712-.816-.23-.083-.398-.125-.565.125-.167.25-.648.816-.795.983-.146.167-.294.187-.544.062-.25-.125-1.058-.39-2.015-1.242-.745-.663-1.247-1.483-1.394-1.733-.146-.25-.015-.385.11-.51.112-.113.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.02-.438-.063-.125-.566-1.355-.776-1.855-.205-.487-.413-.42-.566-.428l-.483-.008c-.167 0-.44.062-.67.313-.23.25-.877.855-.877 2.085s.898 2.418 1.023 2.585c.125.167 1.765 2.693 4.276 3.778.598.258 1.065.412 1.43.528.6.19 1.144.163 1.572.099.482-.072 1.482-.605 1.692-1.19.21-.585.21-1.085.147-1.19-.063-.105-.23-.167-.48-.292z"/></svg>`;  
   const text = lang === 'ar' ? 'تأكيد عبر واتساب' : 'Confirm via WhatsApp';
   confirmBtn.innerHTML = `<span id="confirmBtnText">${text}</span> ${waLogo}`;
 });
 
-// لو اختار أوتوماتيك
 document.getElementById('chooseAutoBtn').addEventListener('click', () => {
   selectedOrderMethod = 'auto';
-  document.getElementById('orderMethodView').style.display = 'none';
-  document.getElementById('checkoutFormView').style.display = 'block';
-  
-  // إرجاع زرار التأكيد للونه الأصلي (الناري الجريديانت)
+  document.getElementById('orderMethodView').style.display = 'none'; document.getElementById('checkoutFormView').style.display = 'block';
   const confirmBtn = document.getElementById('confirmOrderBtn');
-  confirmBtn.style.background = ''; // هيرجع للـ CSS الأساسي
-  confirmBtn.style.boxShadow = '';
-  
+  confirmBtn.style.background = ''; confirmBtn.style.boxShadow = '';
   const text = lang === 'ar' ? 'تأكيد وإرسال الطلب' : 'Confirm Order';
   confirmBtn.innerHTML = `<span id="confirmBtnText">${text}</span> ⚡`;
 });
 
-// تشغيل زرار الرجوع
-document.getElementById('backToMethodBtn').addEventListener('click', () => {
-  document.getElementById('checkoutFormView').style.display = 'none';
-  document.getElementById('orderMethodView').style.display = 'block';
-});
-
-// لو اختار أوتوماتيك
-document.getElementById('chooseAutoBtn').addEventListener('click', () => {
-  selectedOrderMethod = 'auto';
-  document.getElementById('orderMethodView').style.display = 'none';
-  document.getElementById('checkoutFormView').style.display = 'block';
-  
-  // إرجاع زرار التأكيد للونه البرتقالي
-  const confirmBtn = document.getElementById('confirmOrderBtn');
-  confirmBtn.style.background = ''; 
-  confirmBtn.style.boxShadow = '';
-  confirmBtn.innerHTML = lang === 'ar' ? `تأكيد وإرسال الطلب ⚡` : `Confirm Order ⚡`;
-});
-
-// تشغيل زرار الرجوع
-document.getElementById('backToMethodBtn').addEventListener('click', () => {
-  document.getElementById('checkoutFormView').style.display = 'none';
-  document.getElementById('orderMethodView').style.display = 'block';
-});
-
+document.getElementById('backToMethodBtn').addEventListener('click', () => { document.getElementById('checkoutFormView').style.display = 'none'; document.getElementById('orderMethodView').style.display = 'block'; });
 document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
 function closeModal(){ modalOverlay.classList.remove('show'); }
-
-document.querySelectorAll('.radio-opt').forEach(opt=>{
-  opt.addEventListener('click', ()=>{
-    document.querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('selected'));
-    opt.classList.add('selected');
-    selectedPay = opt.dataset.pay;
-  });
-});
+document.querySelectorAll('.radio-opt').forEach(opt=>{ opt.addEventListener('click', ()=>{ document.querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('selected')); opt.classList.add('selected'); selectedPay = opt.dataset.pay; }); });
 
 function buildWhatsAppMessage({orderId, name, phone, address, payLabel}){
   const { subtotal, delivery, total } = cartTotals();
-
   let lines = [];
-  
-  // استخدام مسافات صريحة لحماية الإيموجيز من تشويه واتساب ويب
-  lines.push(`🔥 *طلب جديد من مطعم نار & توابل* 🔥`);
-  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
-  lines.push(`🔢  *رقم الطلب:* #${orderId}`);
-  lines.push(`⏰  *توقيت الطلب:* ${new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}`);
-  lines.push(``);
-  
+  lines.push(`🔥 *طلب جديد من مطعم نار & توابل* 🔥\n━━━━━━━━━━━━━━━━━━━━\n🔢  *رقم الطلب:* #${orderId}\n⏰  *توقيت الطلب:* ${new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}\n`);
   lines.push(`🛒  *تفاصيل الأوردر:*`);
-  Object.entries(cart).forEach(([id, qty])=>{
-    const item = getItem(id);
-    if(!item) return;
-    lines.push(`🍗  ${item.name.ar} (×${qty}) ⟵ *${item.price * qty} ج.م*`);
-  });
-
-  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
-  lines.push(`💵  *المجموع:* ${subtotal} ج.م`);
-  lines.push(`🛵  *خدمة التوصيل:* ${delivery} ج.م`);
-  lines.push(`💰  *الإجمالي المطلوب:* *${total} ج.م*`);
-  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
-  lines.push(``);
-  
-  lines.push(`📍  *بيانات التوصيل:*`);
-  lines.push(`👤  *الاسم:* ${name}`);
-  lines.push(`📞  *رقم الموبايل:* ${phone}`);
-  lines.push(`🏠  *العنوان:* ${address}`);
-  lines.push(`💳  *طريقة الدفع:* ${payLabel}`);
-  lines.push(``);
-
-  // دمج السطور برمز النزول لسطر جديد آمن للواتساب (\r\n)
+  Object.entries(cart).forEach(([id, qty])=>{ const item = getItem(id); if(item) lines.push(`🍗  ${item.name.ar} (×${qty}) ⟵ *${item.price * qty} ج.م*`); });
+  lines.push(`━━━━━━━━━━━━━━━━━━━━\n💵  *المجموع:* ${subtotal} ج.م\n🛵  *خدمة التوصيل:* ${delivery} ج.م\n💰  *الإجمالي المطلوب:* *${total} ج.م*\n━━━━━━━━━━━━━━━━━━━━\n`);
+  lines.push(`📍  *بيانات التوصيل:*\n👤  *الاسم:* ${name}\n📞  *رقم الموبايل:* ${phone}\n🏠  *العنوان:* ${address}\n💳  *طريقة الدفع:* ${payLabel}\n`);
   return lines.join('\r\n');
 }
+
 document.getElementById('confirmOrderBtn').addEventListener('click', ()=>{
-  const name = document.getElementById('custName').value.trim();
-  const phone = document.getElementById('custPhone').value.trim();
-  const address = document.getElementById('custAddress').value.trim();
+  const name = document.getElementById('custName').value.trim(); const phone = document.getElementById('custPhone').value.trim(); const address = document.getElementById('custAddress').value.trim();
+  if(!name || !phone || !address) return showToast(lang==='ar' ? 'من فضلك املأ كل البيانات' : 'Please fill in all fields');
 
-  if(!name || !phone || !address){
-    showToast(lang==='ar' ? 'من فضلك املأ كل البيانات' : 'Please fill in all fields');
-    return;
-  }
-
-  // توليد رقم الطلب
   let lastOrderNum = parseInt(localStorage.getItem('lastOrderNum')) || 1000;
-  lastOrderNum++;
-  localStorage.setItem('lastOrderNum', lastOrderNum); 
+  lastOrderNum++; localStorage.setItem('lastOrderNum', lastOrderNum); 
   const orderId = 'NT-' + lastOrderNum;
   const payLabel = selectedPay === 'cash' ? 'كاش عند الاستلام' : 'بطاقة';
-
-  // بناء الرسالة (دي الرسالة اللي هتتبعت للتليجرام وللواتساب)
   const message = buildWhatsAppMessage({orderId, name, phone, address, payLabel});
 
-  // 1. إرسال أوتوماتيك للتليجرام (في الخلفية)
   const TELEGRAM_TOKEN = '8892636097:AAHwaKcY9VdlJrFHqKTlRpNpeoHZpD4zvwk'; 
   const CHAT_ID = '6822632384';
-  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: CHAT_ID, text: message })
-  });
+  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: message }) });
 
-// بعد ما بعتنا التليجرام في الخلفية، نشوف العميل كان مختار إيه:
   if (selectedOrderMethod === 'wa') {
-    // لو مختار واتساب: نفتحله الشات ونقفل المودال
-    const waUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP}&text=${encodeURIComponent(message)}`;
-    window.open(waUrl, '_blank');
-    closeModal();
-    showToast(lang === 'ar' ? '✓ تم تحويلك لواتساب' : '✓ Redirected to WhatsApp');
+    window.open(`https://wa.me/${RESTAURANT_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+    closeModal(); showToast(lang === 'ar' ? '✓ تم تحويلك لواتساب' : '✓ Redirected to WhatsApp');
   } else {
-    // لو مختار أوتوماتيك: نظهرله شاشة النجاح في الموقع
     document.getElementById('orderIdVal').textContent = '#' + orderId;
-    checkoutFormView.style.display = 'none';
-    successView.classList.add('show');
+    checkoutFormView.style.display = 'none'; successView.classList.add('show');
   }
-// 2. إرسال بيانات الطلب لقاعدة بيانات Firebase
-  const { total } = cartTotals(); 
-  
-  db.collection("orders").add({
-    orderNumber: lastOrderNum, 
-    customerName: name,        
-    customerPhone: phone,      
-    customerAddress: address,  
-    total: total,              
-    paymentMethod: selectedPay,
-    status: 'new',
-    orderDetails: message, // 👈 هنا ضفنا رسالة الطلب كاملة بنفس تفاصيل الواتساب
-    timestamp: Date.now()  // 👈 تعديل مهم جداً: استخدمنا وقت الجهاز لتجنب توقف اللوحة
-  }).then(() => {
-    console.log("تم حفظ الطلب بنجاح");
-  }).catch((error) => {
-    console.error("حدث خطأ: ", error);
-  });
-  // تصفير السلة
-  cart = {}; renderMenu(); renderCart();
 
+  db.collection("orders").add({ orderNumber: lastOrderNum, customerName: name, customerPhone: phone, customerAddress: address, total: cartTotals().total, paymentMethod: selectedPay, status: 'new', orderDetails: message, timestamp: Date.now() })
+    .then(() => { console.log('Order saved to Firestore:', orderId); })
+    .catch(err => {
+      console.error('Firestore save failed:', err);
+      showToast(lang==='ar' ? '⚠️ تعذر حفظ الطلب في النظام، برجاء المحاولة تاني' : '⚠️ Failed to save the order, please try again');
+    });
+  cart = {}; renderMenu(); renderCart();
 });
 
 document.getElementById('closeSuccessBtn').addEventListener('click', closeModal);
-
-/* ============================================================
-   CONTACT FORM (demo)
-============================================================ */
-document.getElementById('contactForm').addEventListener('submit', (e)=>{
-  e.preventDefault();
-  showToast(lang==='ar' ? '✓ تم إرسال رسالتك' : '✓ Your message has been sent');
-  e.target.reset();
-});
-
-/* ============================================================
-   INIT
-============================================================ */
+document.getElementById('contactForm').addEventListener('submit', (e)=>{ e.preventDefault(); showToast(lang==='ar' ? '✓ تم إرسال رسالتك' : '✓ Your message has been sent'); e.target.reset(); });
 applyLang();
 </script>
-
 </body>
 </html>
