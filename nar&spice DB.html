@@ -78,14 +78,14 @@
 
   <script>
     // ⚠️ حط الـ Config بتاعك هنا بدل الكود ده
-    const firebaseConfig = {
-  apiKey: "AIzaSyAD8XEKgwId6rYr9j-iengayu92MObOz44",
+const firebaseConfig = {
+  apiKey: "AIzaSyAD8XEkgwId6rYr9j-iengayu92MObOz44",
   authDomain: "nar-and-spice-db.firebaseapp.com",
   projectId: "nar-and-spice-db",
   storageBucket: "nar-and-spice-db.firebasestorage.app",
   messagingSenderId: "730387083482",
   appId: "1:730387083482:web:f19e20064ee188bc1775e3",
-  measurementId: "G-FGJPSTR7YQ"
+  measurementId: "G-FGJP5TR7YQ"
 };
 
     // تهيئة Firebase
@@ -112,15 +112,17 @@
     });
 
     // دالة تسجيل الدخول
-    function login() {
-      const email = document.getElementById('email').value;
-      const pass = document.getElementById('password').value;
-      auth.signInWithEmailAndPassword(email, pass)
-        .catch(error => {
-          errorMsg.textContent = "بيانات الدخول غير صحيحة!";
-          errorMsg.classList.remove('hidden');
-        });
-    }
+function login() {
+  const email = document.getElementById('email').value;
+  const pass = document.getElementById('password').value;
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(error => {
+      // السطر ده هيطبعلك الإيرور الحقيقي من فايربيز بدل الرسالة الثابتة
+      errorMsg.textContent = error.message; 
+      errorMsg.classList.remove('hidden');
+      console.error(error);
+    });
+}
 
     // دالة تسجيل الخروج
     function logout() {
