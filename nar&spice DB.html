@@ -248,27 +248,27 @@ function login() {
       });
     }
 
-    // إرسال رسالة واتساب للعميل بالتحديثات
+// إرسال رسالة واتساب للعميل بنص عربي صافي وبدون إيموجيز لضمان الاستقرار
     function sendWhatsApp(phone, name, orderNum, status) {
       let formattedPhone = phone;
       if (phone.startsWith('01')) {
         formattedPhone = '+2' + phone;
       }
       
-      let message = `أهلاً بيك يا ${name} 👋\nحبينا نبلغك بخصوص طلبك رقم #${orderNum} من مطعم نار & توابل 🔥\n\n`;
+      let message = "أهلاً بيك يا " + name + "\n";
+      message += "حبينا نبلغك بخصوص طلبك رقم (" + orderNum + ") من مطعم نار & توابل.\n\n";
       
       const selectElement = event.target.closest('tr').querySelector('select');
       const currentStatus = selectElement.value;
 
       if (currentStatus === 'new') {
-        message += "طلبك تم استلامه وجاري تجهيزه بكل حب 🍗";
+        message += "حالة الطلب: تم استلام طلبك وجاري تجهيزه الآن.";
       } else if (currentStatus === 'shipped') {
-        message += "طلبك خرج للتوصيل وهو في الطريق ليك دلوقتي 🛵";
+        message += "حالة الطلب: طلبك خرج للتوصيل وهو في الطريق إليك الآن.";
       } else if (currentStatus === 'delivered') {
-        message += "نتمنى تكون الوجبة عجبتك! بالهنا والشفا 🥰";
+        message += "حالة الطلب: تم توصيل الطلب بنجاح. بالهنا والشفا!";
       }
 
-      // استخدام encodeURIComponent لضمان قراءة الإيموجيز والمسافات بشكل صحيح في الواتساب
       const whatsappUrl = `https://wa.me/${formattedPhone.replace('+', '')}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
     }
