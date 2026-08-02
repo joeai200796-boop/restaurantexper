@@ -564,6 +564,32 @@
   .checkout-btn:hover{transform:translateY(-2px);}
   .checkout-btn:disabled{opacity:0.4; cursor:not-allowed; transform:none;}
 
+  .coupon-row{ display:flex; gap:8px; margin-bottom:16px; }
+  .coupon-row input{
+    flex:1; background:var(--bg-card); border:1px solid var(--line); color:var(--cream);
+    padding:11px 14px; border-radius:10px; font-family:inherit; font-size:0.85rem;
+    text-transform:uppercase;
+  }
+  .coupon-row input::placeholder{text-transform:none;}
+  .coupon-row button{
+    background:var(--bg-card); border:1px solid var(--ember); color:var(--ember);
+    padding:0 16px; border-radius:10px; font-weight:800; font-size:0.82rem; white-space:nowrap;
+    transition:background .2s, color .2s;
+  }
+  .coupon-row button:hover{background:var(--ember); color:#fff;}
+  .coupon-msg{ font-size:0.78rem; margin:-8px 0 14px; min-height:1em; }
+  .coupon-msg.ok{color:#7ED957;}
+  .coupon-msg.err{color:#ff6b6b;}
+  .summary-row.discount span:last-child{color:#7ED957;}
+
+  .closed-banner{
+    display:none;
+    background:linear-gradient(135deg, #B84A20, #7a2e10);
+    color:#fff; text-align:center; font-weight:800; font-size:0.9rem;
+    padding:12px 18px;
+  }
+  .closed-banner.show{display:block;}
+
   /* ============ CHECKOUT MODAL ============ */
   .modal-overlay{
     position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(4px);
@@ -798,6 +824,9 @@ background: transparent;
 <div class="grain"></div>
 
 <!-- ===================== HEADER ===================== -->
+<div class="closed-banner" id="closedBanner">
+  <span id="closedBannerText"></span>
+</div>
 <header>
   <nav class="nav">
     <div class="brand">
@@ -1058,7 +1087,13 @@ background: transparent;
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-summary">
+    <div class="coupon-row">
+      <input type="text" id="couponInputEl" placeholder="كود الخصم" data-ar-ph="كود الخصم" data-en-ph="Coupon code">
+      <button id="applyCouponBtn" data-ar="تطبيق" data-en="Apply">Apply</button>
+    </div>
+    <div class="coupon-msg" id="couponMsg"></div>
     <div class="summary-row"><span data-ar="المجموع الفرعي" data-en="Subtotal">Subtotal</span><span id="subtotalVal">0 EGP</span></div>
+    <div class="summary-row discount" id="discountRow" style="display:none;"><span data-ar="الخصم" data-en="Discount">Discount</span><span id="discountVal">-0 EGP</span></div>
     <div class="summary-row"><span data-ar="التوصيل" data-en="Delivery">Delivery</span><span id="deliveryVal">0 EGP</span></div>
     <div class="summary-row total"><span data-ar="الإجمالي" data-en="Total">Total</span><span id="totalVal">0 EGP</span></div>
     <button class="checkout-btn" id="checkoutBtn" disabled>
@@ -1199,6 +1234,8 @@ const RESTAURANT_WHATSAPP = '201035419531';
 let lang = 'en'; 
 let activeCat = 'all';
 let cart = {}; 
+let appliedCoupon = null; // { id, code, type, value, minOrder }
+let restaurantOpen = true;
 
 /* ============================================================
    دمج الأصناف المضافة من لوحة التحكم مع الأساسي
@@ -1238,6 +1275,27 @@ function fetchMenuFromFirebase() {
 
 fetchMenuFromFirebase();
 
+/* ============================================================
+   حالة المطعم (مفتوح / مقفول) - يتحكم فيها من الداش بورد
+============================================================ */
+const closedBanner = document.getElementById('closedBanner');
+const closedBannerText = document.getElementById('closedBannerText');
+function fetchRestaurantStatus() {
+  db.collection("settings").doc("general").onSnapshot(doc => {
+    restaurantOpen = doc.exists ? (doc.data().isOpen !== false) : true;
+    if (!restaurantOpen) {
+      closedBanner.classList.add('show');
+    } else {
+      closedBanner.classList.remove('show');
+    }
+    closedBannerText.textContent = lang === 'ar'
+      ? '⏸️ المطعم مقفول حاليًا، مينفعش تكمل الأوردر دلوقتي. جرب تاني بعد شوية.'
+      : "⏸️ We're closed right now, orders are paused. Please try again shortly.";
+    renderCart();
+  }, err => console.error('restaurant status error:', err));
+}
+fetchRestaurantStatus();
+
 // تثبيت صور الواجهة الرئيسية عشان متختفيش
 document.getElementById('heroImg').src = 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=900&q=80';
 document.getElementById('aboutImg').src = 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=800&q=80';
@@ -1256,6 +1314,13 @@ function applyLang(){
   document.querySelectorAll('[data-ar][data-en]').forEach(el=>{
     el.textContent = el.getAttribute(lang === 'ar' ? 'data-ar' : 'data-en');
   });
+  const couponInputEl = document.getElementById('couponInputEl');
+  if (couponInputEl) couponInputEl.placeholder = couponInputEl.getAttribute(lang === 'ar' ? 'data-ar-ph' : 'data-en-ph');
+  if (closedBannerText) {
+    closedBannerText.textContent = lang === 'ar'
+      ? '⏸️ المطعم مقفول حاليًا، مينفعش تكمل الأوردر دلوقتي. جرب تاني بعد شوية.'
+      : "⏸️ We're closed right now, orders are paused. Please try again shortly.";
+  }
   renderMenu();
   renderCart();
 }
@@ -1349,12 +1414,17 @@ function cartTotals(){
     const item = getItem(id);
     if(item){ subtotal += item.price * qty; count += qty; }
   });
+  let discount = 0;
+  if (appliedCoupon && subtotal >= (appliedCoupon.minOrder || 0) && subtotal > 0) {
+    discount = appliedCoupon.type === 'percentage' ? Math.round(subtotal * appliedCoupon.value / 100) : appliedCoupon.value;
+    if (discount > subtotal) discount = subtotal;
+  }
   const delivery = subtotal > 0 ? DELIVERY_FEE : 0;
-  return { subtotal, delivery, total: subtotal + delivery, count };
+  return { subtotal, discount, delivery, total: subtotal - discount + delivery, count };
 }
 
 function renderCart(){
-  const { subtotal, delivery, total, count } = cartTotals();
+  const { subtotal, discount, delivery, total, count } = cartTotals();
   cartCountEl.textContent = count;
 
   if(count === 0){
@@ -1383,8 +1453,18 @@ function renderCart(){
         </div>
       </div>`;
     }).join('');
-    checkoutBtn.disabled = false;
+    checkoutBtn.disabled = !restaurantOpen;
   }
+
+  const discountRow = document.getElementById('discountRow');
+  const discountVal = document.getElementById('discountVal');
+  if (discount > 0) {
+    discountRow.style.display = 'flex';
+    discountVal.textContent = '-' + moneyFmt(discount);
+  } else {
+    discountRow.style.display = 'none';
+  }
+
   subtotalVal.textContent = moneyFmt(subtotal); deliveryVal.textContent = moneyFmt(delivery); totalVal.textContent = moneyFmt(total);
   cartItemsEl.querySelectorAll('[data-act]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -1415,10 +1495,57 @@ let selectedPay = 'cash';
 
 document.getElementById('checkoutBtn').addEventListener('click', ()=>{
   if(checkoutBtn.disabled) return;
+  if(!restaurantOpen){
+    showToast(lang==='ar' ? 'المطعم مقفول حاليًا، جرب تاني بعد شوية 🙏' : "We're closed right now, please try again shortly 🙏");
+    return;
+  }
   modalOverlay.classList.add('show');
   document.getElementById('orderMethodView').style.display = 'block';
   checkoutFormView.style.display = 'none';
   successView.classList.remove('show');
+});
+
+document.getElementById('applyCouponBtn').addEventListener('click', ()=>{
+  const couponMsg = document.getElementById('couponMsg');
+  const codeInput = document.getElementById('couponInputEl').value.trim().toUpperCase();
+  couponMsg.className = 'coupon-msg';
+  couponMsg.textContent = '';
+  if(!codeInput) return;
+
+  db.collection('coupons').where('code', '==', codeInput).limit(1).get().then(snap => {
+    if (snap.empty) {
+      appliedCoupon = null;
+      couponMsg.classList.add('err');
+      couponMsg.textContent = lang==='ar' ? 'كود الخصم مش موجود' : 'Invalid coupon code';
+      renderCart();
+      return;
+    }
+    const doc = snap.docs[0];
+    const c = doc.data();
+    if (c.active === false) {
+      appliedCoupon = null;
+      couponMsg.classList.add('err');
+      couponMsg.textContent = lang==='ar' ? 'الكوبون ده متوقف حاليًا' : 'This coupon is no longer active';
+      renderCart();
+      return;
+    }
+    const { subtotal } = cartTotals();
+    if (c.minOrder && subtotal < c.minOrder) {
+      appliedCoupon = null;
+      couponMsg.classList.add('err');
+      couponMsg.textContent = lang==='ar' ? `الكوبون يتطلب طلب بحد أدنى ${c.minOrder} ج.م` : `This coupon needs a minimum order of ${c.minOrder} EGP`;
+      renderCart();
+      return;
+    }
+    appliedCoupon = { id: doc.id, code: c.code, type: c.type, value: c.value, minOrder: c.minOrder || 0 };
+    couponMsg.classList.add('ok');
+    couponMsg.textContent = lang==='ar' ? '✓ تم تطبيق الكوبون' : '✓ Coupon applied';
+    renderCart();
+  }).catch(err => {
+    console.error('coupon check failed:', err);
+    couponMsg.classList.add('err');
+    couponMsg.textContent = lang==='ar' ? 'حصل خطأ، حاول تاني' : 'Something went wrong, try again';
+  });
 });
 
 document.getElementById('chooseWaBtn').addEventListener('click', () => {
@@ -1446,12 +1573,15 @@ function closeModal(){ modalOverlay.classList.remove('show'); }
 document.querySelectorAll('.radio-opt').forEach(opt=>{ opt.addEventListener('click', ()=>{ document.querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('selected')); opt.classList.add('selected'); selectedPay = opt.dataset.pay; }); });
 
 function buildWhatsAppMessage({orderId, name, phone, address, payLabel}){
-  const { subtotal, delivery, total } = cartTotals();
+  const { subtotal, discount, delivery, total } = cartTotals();
   let lines = [];
   lines.push(`🔥 *طلب جديد من مطعم نار & توابل* 🔥\n━━━━━━━━━━━━━━━━━━━━\n🔢  *رقم الطلب:* #${orderId}\n⏰  *توقيت الطلب:* ${new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}\n`);
   lines.push(`🛒  *تفاصيل الأوردر:*`);
   Object.entries(cart).forEach(([id, qty])=>{ const item = getItem(id); if(item) lines.push(`🍗  ${item.name.ar} (×${qty}) ⟵ *${item.price * qty} ج.م*`); });
-  lines.push(`━━━━━━━━━━━━━━━━━━━━\n💵  *المجموع:* ${subtotal} ج.م\n🛵  *خدمة التوصيل:* ${delivery} ج.م\n💰  *الإجمالي المطلوب:* *${total} ج.م*\n━━━━━━━━━━━━━━━━━━━━\n`);
+  let totalsBlock = `━━━━━━━━━━━━━━━━━━━━\n💵  *المجموع:* ${subtotal} ج.م\n`;
+  if (discount > 0) totalsBlock += `🏷️  *خصم كوبون (${appliedCoupon.code}):* -${discount} ج.م\n`;
+  totalsBlock += `🛵  *خدمة التوصيل:* ${delivery} ج.م\n💰  *الإجمالي المطلوب:* *${total} ج.م*\n━━━━━━━━━━━━━━━━━━━━\n`;
+  lines.push(totalsBlock);
   lines.push(`📍  *بيانات التوصيل:*\n👤  *الاسم:* ${name}\n📞  *رقم الموبايل:* ${phone}\n🏠  *العنوان:* ${address}\n💳  *طريقة الدفع:* ${payLabel}\n`);
   return lines.join('\r\n');
 }
@@ -1478,13 +1608,16 @@ document.getElementById('confirmOrderBtn').addEventListener('click', ()=>{
     checkoutFormView.style.display = 'none'; successView.classList.add('show');
   }
 
-  db.collection("orders").add({ orderNumber: lastOrderNum, customerName: name, customerPhone: phone, customerAddress: address, total: cartTotals().total, paymentMethod: selectedPay, status: 'new', orderDetails: message, timestamp: Date.now() })
+  db.collection("orders").add({ orderNumber: lastOrderNum, customerName: name, customerPhone: phone, customerAddress: address, subtotal: cartTotals().subtotal, discount: cartTotals().discount, couponCode: appliedCoupon ? appliedCoupon.code : null, total: cartTotals().total, paymentMethod: selectedPay, status: 'new', orderDetails: message, timestamp: Date.now() })
     .then(() => { console.log('Order saved to Firestore:', orderId); })
     .catch(err => {
       console.error('Firestore save failed:', err);
       showToast(lang==='ar' ? '⚠️ تعذر حفظ الطلب في النظام، برجاء المحاولة تاني' : '⚠️ Failed to save the order, please try again');
     });
-  cart = {}; renderMenu(); renderCart();
+  cart = {}; appliedCoupon = null;
+  const couponInputEl = document.getElementById('couponInputEl'); if(couponInputEl) couponInputEl.value = '';
+  const couponMsgEl = document.getElementById('couponMsg'); if(couponMsgEl){ couponMsgEl.textContent=''; couponMsgEl.className='coupon-msg'; }
+  renderMenu(); renderCart();
 });
 
 document.getElementById('closeSuccessBtn').addEventListener('click', closeModal);
