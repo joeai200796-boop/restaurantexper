@@ -1,1 +1,1735 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nar & Spice | نار & توابل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #1C1410;
+    --bg-soft: #261C16;
+    --bg-card: #2C2118;
+    --ember: #E8622C;
+    --ember-dim: #B84A20;
+    --spice: #F2B544;
+    --cream: #F5EBDD;
+    --cream-dim: #C9BCA8;
+    --line: rgba(245,235,221,0.12);
+    --shadow: rgba(0,0,0,0.45);
+  }
 
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background: var(--bg);
+    color: var(--cream);
+    font-family:'Tajawal',sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  [dir="ltr"] body, body.lang-en{
+    font-family:'Bricolage Grotesque',sans-serif;
+  }
+
+  /* ember texture backdrop */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 800px 500px at 15% -5%, rgba(232,98,44,0.18), transparent 60%),
+      radial-gradient(ellipse 700px 600px at 110% 30%, rgba(242,181,68,0.10), transparent 55%),
+      radial-gradient(ellipse 900px 500px at 50% 110%, rgba(232,98,44,0.12), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .grain{
+    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit; cursor:pointer;}
+  img{max-width:100%; display:block;}
+
+  .container{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 28px;
+    position:relative;
+    z-index:2;
+  }
+
+  /* ===== visually-hidden for a11y ===== */
+  .vh{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}
+
+  /* ===== focus ===== */
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+    outline:2px solid var(--spice);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  /* ============ HEADER ============ */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(28,20,16,0.86);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px;
+    max-width:1180px; margin:0 auto;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-weight:900; font-size:1.3rem; letter-spacing:0.3px;
+  }
+  .brand .flame{
+    width:34px; height:34px;
+    display:grid; place-items:center;
+    background:linear-gradient(145deg, var(--ember), var(--spice));
+    border-radius:9px;
+    font-size:1.1rem;
+    box-shadow:0 4px 14px rgba(232,98,44,0.35);
+    flex-shrink:0;
+  }
+  .brand small{
+    display:block; font-weight:500; font-size:0.62rem; color:var(--cream-dim);
+    letter-spacing:1.5px; text-transform:uppercase; margin-top:1px;
+  }
+
+  .nav-links{
+    display:flex; gap:34px; align-items:center;
+    list-style:none;
+  }
+  .nav-links a{
+    font-weight:700; font-size:0.95rem; color:var(--cream-dim);
+    position:relative; padding:4px 0;
+    transition:color .25s;
+  }
+  .nav-links a:hover{color:var(--cream);}
+  .nav-links a::after{
+    content:""; position:absolute; bottom:-3px; inset:0; right:0; left:0; height:2px;
+    background:var(--ember); transform:scaleX(0); transform-origin:center;
+    transition:transform .25s;
+  }
+  .nav-links a:hover::after{transform:scaleX(1);}
+
+  .nav-right{display:flex; align-items:center; gap:14px;}
+
+  .lang-toggle{
+    background:var(--bg-card); border:1px solid var(--line);
+    color:var(--cream); padding:8px 14px; border-radius:100px;
+    font-weight:700; font-size:0.82rem; display:flex; align-items:center; gap:6px;
+    transition:border-color .2s, background .2s;
+  }
+  .lang-toggle:hover{border-color:var(--ember);}
+
+  .cart-btn{
+    position:relative;
+    background:var(--ember); color:var(--cream);
+    border:none; width:44px; height:44px; border-radius:50%;
+    display:grid; place-items:center; font-size:1.2rem;
+    box-shadow:0 4px 16px rgba(232,98,44,0.4);
+    transition:transform .2s;
+  }
+  .cart-btn:hover{transform:translateY(-2px) scale(1.04);}
+  .cart-count{
+    position:absolute; top:-4px; left:-4px;
+    background:var(--spice); color:#1C1410;
+    font-size:0.68rem; font-weight:900;
+    width:20px; height:20px; border-radius:50%;
+    display:grid; place-items:center;
+    border:2px solid var(--bg);
+    transition:transform .3s;
+  }
+  .cart-count.bump{ animation:bump .35s ease; }
+  @keyframes bump{ 0%{transform:scale(1)} 40%{transform:scale(1.5)} 100%{transform:scale(1)} }
+
+  .burger-toggle{display:none; background:none; border:none; color:var(--cream); font-size:1.5rem;}
+
+  /* ===== إخفاء هيدر الموبايل (Menu ✕) من على الكمبيوتر تماماً ===== */
+  .nav-head-mobile {
+    display: none !important;
+  }
+
+  /* ===== خلفية البلور المظللة ورا القائمة (ضبابية قوية جداً) ===== */
+  .nav-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(15, 10, 8, 0.85) !important; /* لون أسود دافئ غامق جداً يعزل الموقع */
+    backdrop-filter: blur(15px) !important; /* بلور قوي جداً للخلفية */
+    -webkit-backdrop-filter: blur(15px) !important;
+    z-index: 20 !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease !important;
+  }
+  .nav-overlay.show {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;
+    padding:90px 0 70px;
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.05fr 0.95fr;
+    gap:50px; align-items:center;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(232,98,44,0.12); border:1px solid rgba(232,98,44,0.35);
+    color:var(--spice); font-weight:700; font-size:0.78rem;
+    padding:7px 14px; border-radius:100px; margin-bottom:22px;
+    letter-spacing:0.3px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--spice); animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%,100%{opacity:1} 50%{opacity:0.3}}
+
+  h1.hero-title{
+    font-size:clamp(2.4rem, 5vw, 4.1rem);
+    font-weight:900; line-height:1.08;
+    margin-bottom:22px;
+    letter-spacing:-0.5px;
+  }
+  h1.hero-title .stroke{
+    color:transparent;
+    -webkit-text-stroke:1.5px var(--ember);
+  }
+  h1.hero-title .accent{ color:var(--ember); }
+
+  .hero-sub{
+    font-size:1.08rem; color:var(--cream-dim); line-height:1.75;
+    max-width:480px; margin-bottom:34px;
+  }
+
+  .hero-cta{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:42px;}
+  .btn{
+    padding:15px 30px; border-radius:12px; font-weight:800; font-size:0.98rem;
+    border:none; display:inline-flex; align-items:center; gap:8px;
+    transition:transform .2s, box-shadow .2s, background .2s;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg, var(--ember), var(--ember-dim));
+    color:#fff;
+    box-shadow:0 10px 28px rgba(232,98,44,0.35);
+  }
+  .btn-primary:hover{transform:translateY(-3px); box-shadow:0 14px 32px rgba(232,98,44,0.48);}
+  .btn-ghost{
+    background:transparent; color:var(--cream); border:1.5px solid var(--line);
+  }
+  .btn-ghost:hover{border-color:var(--cream-dim);}
+
+  .hero-stats{display:flex; gap:34px;}
+  .hero-stat b{display:block; font-size:1.6rem; font-weight:900; color:var(--spice);}
+  .hero-stat span{font-size:0.8rem; color:var(--cream-dim);}
+
+  .hero-visual{
+    position:relative;
+    aspect-ratio:1/1;
+    display:grid; place-items:center;
+  }
+  .hero-visual .ring{
+    position:absolute; inset:0;
+    border-radius:50%;
+    border:1.5px dashed rgba(242,181,68,0.25);
+    animation:spin 26s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .hero-visual .ring2{
+    position:absolute; inset:40px;
+    border-radius:50%;
+    border:1px dashed rgba(232,98,44,0.2);
+    animation:spin 18s linear infinite reverse;
+  }
+  .hero-img-wrap{
+    width:78%; aspect-ratio:1/1; border-radius:50%; overflow:hidden;
+    box-shadow:0 30px 70px rgba(0,0,0,0.55), 0 0 0 10px rgba(44,33,24,0.7), 0 0 0 11px rgba(232,98,44,0.25);
+    position:relative; z-index:2;
+  }
+  .hero-img-wrap img{width:100%; height:100%; object-fit:cover;}
+  .floating-badge{
+    position:absolute; z-index:3;
+    background:var(--bg-card); border:1px solid var(--line);
+    padding:12px 18px; border-radius:14px;
+    box-shadow:0 14px 30px var(--shadow);
+    font-weight:800; font-size:0.85rem;
+    display:flex; align-items:center; gap:8px;
+    animation:float 4.5s ease-in-out infinite;
+  }
+  .floating-badge.b1{ top:6%; right:-2%; animation-delay:0s; }
+  .floating-badge.b2{ bottom:8%; left:-4%; animation-delay:1.2s; }
+  @keyframes float{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  /* ============ SPICE STRIP (signature element) ============ */
+  .spice-strip{
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    background:var(--bg-soft);
+    padding:26px 0;
+  }
+  .spice-strip-inner{
+    display:flex; align-items:center; gap:40px; flex-wrap:wrap; justify-content:space-between;
+  }
+  .spice-strip-label{font-weight:800; font-size:0.85rem; color:var(--cream-dim); white-space:nowrap;}
+  .spice-levels{display:flex; gap:10px; flex-wrap:wrap;}
+  .spice-pill{
+    display:flex; align-items:center; gap:8px;
+    background:var(--bg-card); border:1px solid var(--line);
+    padding:8px 16px; border-radius:100px; font-size:0.82rem; font-weight:700;
+  }
+  .spice-pill .flames{display:flex; gap:2px;}
+  .spice-pill .flames span{opacity:0.25; font-size:0.85rem;}
+  .spice-pill .flames span.on{opacity:1;}
+  .spice-pill.l1 .flames span:nth-child(-n+1){color:var(--spice);}
+  .spice-pill.l2 .flames span:nth-child(-n+2){color:var(--spice);}
+  .spice-pill.l3 .flames span:nth-child(-n+3){color:var(--ember);}
+  .spice-pill.l4 .flames span:nth-child(-n+4){color:var(--ember);}
+
+  /* ============ SECTION HEADINGS ============ */
+  .section{padding:90px 0;}
+  .section-head{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    margin-bottom:48px; gap:24px; flex-wrap:wrap;
+  }
+  .section-head .eyebrow{margin-bottom:14px;}
+  .section-title{
+    font-size:clamp(1.9rem, 3.2vw, 2.6rem);
+    font-weight:900; letter-spacing:-0.4px;
+  }
+  .section-desc{color:var(--cream-dim); max-width:420px; font-size:0.98rem; line-height:1.7;}
+
+  /* ============ MENU ============ */
+  .menu-tabs{
+    display:flex; gap:10px; margin-bottom:38px; flex-wrap:wrap;
+  }
+  .menu-tab{
+    background:var(--bg-card); border:1px solid var(--line); color:var(--cream-dim);
+    padding:10px 20px; border-radius:100px; font-weight:700; font-size:0.88rem;
+    transition:all .2s;
+  }
+  .menu-tab.active, .menu-tab:hover{
+    background:var(--ember); border-color:var(--ember); color:#fff;
+  }
+
+  .menu-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;
+  }
+  .menu-card{
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    overflow:hidden;
+    display:flex; flex-direction:column;
+    transition:transform .3s, box-shadow .3s, border-color .3s;
+  }
+  .menu-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 20px 40px var(--shadow);
+    border-color:rgba(232,98,44,0.35);
+  }
+  .menu-card-img{
+    aspect-ratio:4/3; overflow:hidden; position:relative;
+  }
+  .menu-card-img img{width:100%; height:100%; object-fit:cover; transition:transform .5s;}
+  .menu-card:hover .menu-card-img img{transform:scale(1.08);}
+  .menu-card-badge{
+    position:absolute; top:12px; inset-inline-start:12px;
+    background:rgba(28,20,16,0.85); backdrop-filter:blur(6px);
+    padding:5px 11px; border-radius:100px; font-size:0.72rem; font-weight:800;
+    color:var(--spice); border:1px solid rgba(242,181,68,0.3);
+  }
+  .menu-card-body{padding:20px; display:flex; flex-direction:column; gap:10px; flex:1;}
+  .menu-card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .menu-card-name{font-weight:800; font-size:1.08rem; line-height:1.3;}
+  .menu-card-price{font-weight:900; color:var(--spice); font-size:1.1rem; white-space:nowrap;}
+  .menu-card-desc{color:var(--cream-dim); font-size:0.86rem; line-height:1.6; flex:1;}
+  .menu-card-flames{display:flex; gap:3px; font-size:0.78rem;}
+  .menu-card-flames span{opacity:0.25;}
+  .menu-card-flames span.on{opacity:1; color:var(--ember);}
+
+  .add-btn{
+    margin-top:6px;
+    width:100%; padding:12px; border-radius:11px;
+    background:transparent; border:1.5px solid var(--ember);
+    color:var(--ember); font-weight:800; font-size:0.9rem;
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    transition:all .25s;
+  }
+  .add-btn:hover{ background:var(--ember); color:#fff; }
+  .add-btn.added{
+    background:var(--spice); border-color:var(--spice); color:#1C1410;
+  }
+
+  /* ============ ABOUT ============ */
+  .about{
+    display:grid; grid-template-columns:0.9fr 1.1fr; gap:60px; align-items:center;
+  }
+  .about-img{
+    border-radius:24px; overflow:hidden; aspect-ratio:4/5;
+    box-shadow:0 30px 60px var(--shadow);
+    position:relative;
+  }
+  .about-img img{width:100%; height:100%; object-fit:cover;}
+  .about-stats{
+    display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:32px;
+  }
+  .stat-box{
+    background:var(--bg-card); border:1px solid var(--line); border-radius:16px; padding:20px;
+  }
+  .stat-box b{display:block; font-size:1.7rem; font-weight:900; color:var(--ember); margin-bottom:4px;}
+  .stat-box span{font-size:0.82rem; color:var(--cream-dim);}
+  .about-text p{color:var(--cream-dim); line-height:1.85; font-size:1.02rem; margin-bottom:18px;}
+
+  /* ============ CONTACT ============ */
+  .contact-wrap{
+    display:grid; grid-template-columns:1fr 1fr; gap:50px;
+  }
+  .contact-card{
+    background:var(--bg-card); border:1px solid var(--line); border-radius:20px; padding:36px;
+  }
+  .contact-list{list-style:none; display:flex; flex-direction:column; gap:22px; margin-top:6px;}
+  .contact-list li{display:flex; align-items:flex-start; gap:14px;}
+  .contact-ico{
+    width:42px; height:42px; border-radius:11px; background:rgba(232,98,44,0.14);
+    display:grid; place-items:center; flex-shrink:0; font-size:1.1rem;
+  }
+  .contact-list b{display:block; font-size:0.95rem; margin-bottom:2px;}
+  .contact-list span{color:var(--cream-dim); font-size:0.88rem; line-height:1.6;}
+
+  .form-group{margin-bottom:18px;}
+  .form-group label{display:block; font-weight:700; font-size:0.85rem; margin-bottom:8px; color:var(--cream-dim);}
+  .form-group input, .form-group textarea{
+    width:100%; background:var(--bg); border:1px solid var(--line); border-radius:10px;
+    padding:13px 16px; color:var(--cream); font-family:inherit; font-size:0.92rem;
+    transition:border-color .2s;
+  }
+  .form-group input:focus, .form-group textarea:focus{border-color:var(--ember); outline:none;}
+  .form-group textarea{resize:vertical; min-height:100px;}
+
+  /* ============ FOOTER ============ */
+  footer{
+    border-top:1px solid var(--line);
+    padding:50px 0 28px;
+    background:var(--bg-soft);
+  }
+  .footer-grid{
+    display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:40px; margin-bottom:40px;
+  }
+  .footer-brand p{color:var(--cream-dim); font-size:0.9rem; line-height:1.7; margin-top:14px; max-width:320px;}
+  .footer-col h4{font-size:0.85rem; font-weight:800; margin-bottom:16px; color:var(--cream-dim); letter-spacing:0.5px;}
+  .footer-col ul{list-style:none; display:flex; flex-direction:column; gap:11px;}
+  .footer-col a{font-size:0.9rem; color:var(--cream-dim); transition:color .2s;}
+  .footer-col a:hover{color:var(--spice);}
+ /* ===== تظبيط شريط الفوتر التحتاني ===== */
+  .footer-bottom {
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between; /* بتوزع الـ 3 جمل جمب بعض بمسافات متساوية */
+    align-items: center;
+    flex-wrap: wrap; /* عشان لو الشاشة صغرت في الموبايل ينزلوا تحت بعض بنظام */
+    gap: 15px;
+    font-size: 0.82rem;
+    color: var(--cream-dim);
+  }
+
+  /* ===== تنسيق لينك Joe Advertise ===== */
+  .dev-credit a {
+    color: var(--ember);
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s, text-shadow 0.2s;
+  }
+  
+  .dev-credit a:hover {
+    color: var(--spice);
+    text-shadow: 0 0 10px rgba(242, 181, 68, 0.4);
+  }
+
+  /* تظبيط في الشاشات الصغيرة (الموبايل) عشان يجوا في النص */
+  @media (max-width: 760px) {
+    .footer-bottom {
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  /* ============ CART DRAWER ============ */
+  .overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(2px);
+    z-index:90; opacity:0; pointer-events:none; transition:opacity .3s;
+  }
+  .overlay.show{opacity:1; pointer-events:auto;}
+
+  .cart-drawer{
+    position:fixed; top:0; bottom:0; inset-inline-end:0;
+    width:420px; max-width:92vw;
+    background:var(--bg-soft);
+    border-inline-start:1px solid var(--line);
+    z-index:100;
+    display:flex; flex-direction:column;
+    transform:translateX(110%);
+    transition:transform .38s cubic-bezier(.22,.9,.3,1);
+    box-shadow:-20px 0 50px rgba(0,0,0,0.5);
+  }
+  [dir="rtl"] .cart-drawer{ transform:translateX(-110%); }
+  .cart-drawer.open{ transform:translateX(0); }
+
+  .cart-head{
+    padding:24px 26px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .cart-head h3{font-size:1.25rem; font-weight:900;}
+  .cart-close{
+    background:var(--bg-card); border:1px solid var(--line); color:var(--cream);
+    width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-size:1rem;
+  }
+  .cart-close:hover{border-color:var(--ember);}
+
+  .cart-items{
+    flex:1; overflow-y:auto; padding:18px 26px;
+    display:flex; flex-direction:column; gap:16px;
+  }
+  .cart-empty{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    height:100%; text-align:center; color:var(--cream-dim); gap:14px; padding:40px 20px;
+  }
+  .cart-empty .ico{font-size:2.6rem; opacity:0.5;}
+
+  .cart-item{
+    display:flex; gap:14px; padding-bottom:16px; border-bottom:1px solid var(--line);
+  }
+  .cart-item:last-child{border-bottom:none;}
+  .cart-item img{width:68px; height:68px; border-radius:12px; object-fit:cover; flex-shrink:0;}
+  .cart-item-info{flex:1; min-width:0;}
+  .cart-item-info b{font-size:0.92rem; display:block; margin-bottom:2px;}
+  .cart-item-price{color:var(--spice); font-weight:800; font-size:0.88rem;}
+  .cart-item-row{display:flex; align-items:center; justify-content:space-between; margin-top:8px;}
+  .qty-ctrl{
+    display:flex; align-items:center; gap:10px;
+    background:var(--bg-card); border-radius:9px; padding:4px 8px;
+  }
+  .qty-ctrl button{
+    background:none; border:none; color:var(--cream); width:22px; height:22px;
+    font-weight:800; font-size:0.95rem; display:grid; place-items:center;
+  }
+  .qty-ctrl button:hover{color:var(--ember);}
+  .qty-ctrl span{font-weight:800; font-size:0.88rem; min-width:16px; text-align:center;}
+  .remove-btn{
+    background:none; border:none; color:var(--cream-dim); font-size:0.78rem; font-weight:700;
+    text-decoration:underline; text-underline-offset:2px;
+  }
+  .remove-btn:hover{color:var(--ember);}
+
+  .cart-summary{
+    border-top:1px solid var(--line); padding:22px 26px 26px;
+    background:var(--bg-soft);
+  }
+  .summary-row{
+    display:flex; justify-content:space-between; font-size:0.92rem; color:var(--cream-dim);
+    margin-bottom:10px;
+  }
+  .summary-row.total{
+    color:var(--cream); font-weight:900; font-size:1.15rem;
+    padding-top:12px; margin-top:6px; border-top:1px solid var(--line);
+  }
+  .summary-row.total span:last-child{color:var(--spice);}
+  .checkout-btn{
+    width:100%; margin-top:16px; padding:16px; border-radius:13px;
+    background:linear-gradient(135deg, var(--ember), var(--ember-dim));
+    color:#fff; font-weight:900; font-size:1rem; border:none;
+    box-shadow:0 12px 30px rgba(232,98,44,0.35);
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:transform .2s;
+  }
+  .checkout-btn:hover{transform:translateY(-2px);}
+  .checkout-btn:disabled{opacity:0.4; cursor:not-allowed; transform:none;}
+
+  /* ============ CHECKOUT MODAL ============ */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(4px);
+    z-index:200; display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+ .modal {
+  /* استبدال اللون الصلب بدرجة من نفس البني بتاعك بس شفافة بنسبة 70% */
+  background: rgba(38, 28, 22, 0.7) !important;
+  
+  /* إضافة تأثير الزجاج المغبش (Frosted Glass) */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  
+  border: 1px solid rgba(207, 131, 25, 0.15);
+  border-radius: 22px;
+  width: 480px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 34px;
+  position: relative;
+  
+  /* ظل تقيل شوية عشان يفصل المربع الشفاف عن الخلفية */
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+.modal .form-group input, 
+.modal .form-group textarea {
+  background: rgba(28, 20, 16, 0.5) !important;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+  .modal-close{
+    position:absolute; top:20px; inset-inline-end:20px;
+    background:var(--bg-card); border:1px solid var(--line); color:var(--cream);
+    width:34px; height:34px; border-radius:50%; font-size:0.95rem;
+  }
+  .modal h3{font-size:1.5rem; font-weight:900; margin-bottom:6px;}
+  .modal p.modal-sub{color:var(--cream-dim); font-size:0.9rem; margin-bottom:26px;}
+  .modal .form-group{margin-bottom:16px;}
+  .radio-group{display:flex; gap:10px; margin-bottom:20px;}
+  .radio-opt{
+    flex:1; border:1.5px solid var(--line); border-radius:11px; padding:12px;
+    text-align:center; font-weight:700; font-size:0.85rem; cursor:pointer;
+    transition:all .2s; background:var(--bg-card);
+  }
+  .radio-opt.selected{border-color:var(--ember); background:rgba(232,98,44,0.12); color:var(--spice);}
+
+  .success-view{ text-align:center; padding:20px 0; display:none; }
+  .success-view.show{display:block;}
+  .success-view .ico{
+    width:80px; height:80px; border-radius:50%; background:rgba(242,181,68,0.15);
+    display:grid; place-items:center; font-size:2.2rem; margin:0 auto 20px;
+    border:2px solid var(--spice);
+  }
+  .success-view h3{margin-bottom:10px;}
+  .success-view p{color:var(--cream-dim); margin-bottom:6px; line-height:1.7;}
+  .order-id{
+    display:inline-block; background:var(--bg-card); border:1px dashed var(--ember);
+    padding:8px 18px; border-radius:10px; font-weight:900; color:var(--spice);
+    margin:16px 0; letter-spacing:1px;
+  }
+
+  .toast{
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--bg-card); border:1px solid rgba(242,181,68,0.4); color:var(--cream);
+    padding:13px 24px; border-radius:100px; font-weight:700; font-size:0.88rem;
+    z-index:300; opacity:0; pointer-events:none; transition:all .3s;
+    box-shadow:0 14px 30px var(--shadow);
+    display:flex; align-items:center; gap:9px; white-space:nowrap;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 980px){
+    .hero-grid{grid-template-columns:1fr; text-align:center;}
+    .hero-sub{margin-inline:auto;}
+    .hero-cta{justify-content:center;}
+    .hero-stats{justify-content:center;}
+    .hero-visual{margin-top:30px; max-width:380px; margin-inline:auto;}
+    .about{grid-template-columns:1fr;}
+    .about-img{max-width:420px; margin-inline:auto;}
+    .contact-wrap{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+  }
+
+  /* ============ MOBILE RESPONSIVE & NAV DRAWER ============ */
+  @media (max-width: 760px) {
+    /* إظهار زرار القائمة (☰) في الهيدر */
+    .burger-toggle { display: block !important; }
+
+    /* إظهار هيدر القائمة الجانبية (الكلمة وزرار ✕) في الموبايل بس */
+    .nav-head-mobile {
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-head-mobile span {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--cream);
+    }
+    .nav-close-btn {
+background: transparent;     
+ border: 1px solid var(--line);
+      color: var(--cream);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-close-btn:hover {
+      background: var(--ember);
+      border-color: var(--ember);
+      color: #fff;
+    }
+
+    /* صندوق القائمة الجانبية (Drawer) بخلفية تقيلة معزولة تماماً */
+    .nav-links {
+      position: fixed !important;
+      top: 0 !important;
+      bottom: 0 !important;
+      width: 285px !important;
+      max-width: 85vw !important;
+      background: rgb(24, 18, 14) !important; /* لون خلفية صلب وغامق يعزل عن اللي تحتها */
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9) !important;
+      z-index: 999 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 24px !important;
+      gap: 12px !important;
+      transition: transform 0.38s cubic-bezier(.22,.9,.3,1) !important;
+    }
+
+    /* تظبيط اتجاه الفتح حسب اللغة (عربي / إنجليزي) */
+    [dir="rtl"] .nav-links {
+      right: 0 !important;
+      left: auto !important;
+      transform: translateX(110%) !important;
+      border-left: 1px solid var(--line) !important;
+    }
+    [dir="ltr"] .nav-links {
+      left: 0 !important;
+      right: auto !important;
+      transform: translateX(-110%) !important;
+      border-right: 1px solid var(--line) !important;
+    }
+
+    /* حركة الفتح */
+    .nav-links.open { transform: translateX(0) !important; }
+
+    /* شكل أزرار الروابط (الكروت) داخل القائمة */
+    .nav-links li { width: 100%; }
+    .nav-links li:not(.nav-head-mobile) a {
+      display: block;
+      width: 100%;
+      padding: 13px 16px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--cream-dim);
+background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+    .nav-links li:not(.nav-head-mobile) a:hover {
+      background: var(--ember);
+      color: #fff;
+      border-color: var(--ember);
+      transform: translateX(-4px);
+    }
+    [dir="ltr"] .nav-links li:not(.nav-head-mobile) a:hover { transform: translateX(4px); }
+    .nav-links a::after { display: none !important; }
+
+    /* تظبيط باقي الشبكة في الموبايل */
+    .menu-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .cart-drawer { width: 100%; }
+  }
+  /* ===== استايل حقوق المطور في الفوتر ===== */
+  .dev-credit a {
+    color: var(--ember);
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s, text-shadow 0.2s;
+  }
+  .dev-credit a:hover {
+    color: var(--spice);
+    text-shadow: 0 0 10px rgba(242, 181, 68, 0.4);
+  }
+  /* ===== تنسيقات أزرار اختيار طريقة الطلب والتوهج ===== */
+  .method-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 18px;
+    background: transparent;
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    text-align: right;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+  [dir="ltr"] .method-btn { text-align: left; }
+
+  /* توهج أخضر لزرار الواتساب */
+  .hover-glow-wa:hover {
+    border-color: #25D366 !important;
+    background: rgba(37, 211, 102, 0.08) !important;
+    box-shadow: 0 0 22px rgba(37, 211, 102, 0.4), inset 0 0 10px rgba(37, 211, 102, 0.15) !important;
+    transform: translateY(-3px);
+  }
+
+  /* توهج ناري/برتقالي لزرار الأوتوماتيك */
+  .hover-glow-auto:hover {
+    border-color: var(--ember) !important;
+    background: rgba(232, 98, 44, 0.08) !important;
+    box-shadow: 0 0 22px rgba(232, 98, 44, 0.4), inset 0 0 10px rgba(232, 98, 44, 0.15) !important;
+    transform: translateY(-3px);
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<!-- ===================== HEADER ===================== -->
+<header>
+  <nav class="nav">
+    <div class="brand">
+      <div class="flame">🔥</div>
+      <div>
+        <span data-ar="نار & توابل" data-en="Nar & Spice">Nar & Spice</span>
+        <small data-ar="فرايد تشكن" data-en="FRIED CHICKEN HOUSE">FRIED CHICKEN HOUSE</small>
+      </div>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li class="nav-head-mobile">
+        <span data-ar="الأقـــســـام" data-en="Explore">Menu</span>
+        <button class="nav-close-btn" id="navCloseBtn" aria-label="Close menu">✕</button>
+      </li>
+      <li><a href="#home" data-ar="الرئيسية" data-en="Home">Home</a></li>
+      <li><a href="#menu" data-ar="القائمة" data-en="Menu">Menu</a></li>
+      <li><a href="#about" data-ar="من نحن" data-en="About">About</a></li>
+      <li><a href="#contact" data-ar="تواصل معنا" data-en="Contact">Contact</a></li>
+    </ul>
+
+    <div class="nav-right">
+      <button class="lang-toggle" id="langToggle" aria-label="Switch language">
+        <span id="langToggleText">ع</span>
+      </button>
+      <button class="cart-btn" id="cartOpenBtn" aria-label="Open cart">
+        🛒
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <button class="burger-toggle" id="burgerToggle" aria-label="Menu">☰</button>
+    </div>
+  </nav>
+</header> <div class="nav-overlay" id="navOverlay"></div>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero" id="home">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>
+        <span data-ar="مشوي بالنار، متبّل بالحب" data-en="Fired up daily, seasoned with love">Fired up daily, seasoned with love</span>
+      </div>
+      <h1 class="hero-title">
+        <span data-ar="تشكن" data-en="Chicken">Chicken</span>
+        <span class="accent" data-ar="مقرمش" data-en="so crispy">so crispy</span>
+        <br>
+        <span class="stroke" data-ar="من النار" data-en="it crackles">it crackles</span>
+        <span data-ar="لطبقك" data-en="on the first bite">on the first bite</span>
+      </h1>
+      <p class="hero-sub" data-ar="نقع كل قطعة 24 ساعة في تتبيلتنا السرية، نقليها لحد ما تبقى دهب، وبنوصلهالك سخنة في أقل من 30 دقيقة."
+         data-en="Every piece brined for 24 hours in our secret spice blend, fried golden, and delivered to your door in under 30 minutes.">
+        Every piece brined for 24 hours in our secret spice blend, fried golden, and delivered to your door in under 30 minutes.
+      </p>
+      <div class="hero-cta">
+        <a href="#menu" class="btn btn-primary">
+          <span data-ar="اطلب دلوقتي" data-en="Order Now">Order Now</span> 🔥
+        </a>
+        <a href="#about" class="btn btn-ghost" data-ar="تعرف علينا" data-en="Our Story">Our Story</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <b>24h</b>
+          <span data-ar="تتبيلة طازة" data-en="Fresh brine">Fresh brine</span>
+        </div>
+        <div class="hero-stat">
+          <b>30<span data-ar="د" data-en="min">min</span></b>
+          <span data-ar="متوسط التوصيل" data-en="Avg. delivery">Avg. delivery</span>
+        </div>
+        <div class="hero-stat">
+          <b>4.9★</b>
+          <span data-ar="تقييم العملاء" data-en="Customer rating">Customer rating</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="ring"></div>
+      <div class="ring2"></div>
+      <div class="hero-img-wrap">
+        <img id="heroImg" alt="Crispy fried chicken burger" src="">
+      </div>
+      <div class="floating-badge b1">🌶️ <span data-ar="حار جداً" data-en="Extra Hot">Extra Hot</span></div>
+      <div class="floating-badge b2">⭐ <span data-ar="الأكثر طلباً" data-en="Best Seller">Best Seller</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SPICE STRIP (signature element) ===================== -->
+<div class="spice-strip">
+  <div class="container spice-strip-inner">
+    <span class="spice-strip-label" data-ar="🌡️ دليل درجة الحرارة في القائمة" data-en="🌡️ Heat guide used across our menu">🌡️ Heat guide used across our menu</span>
+    <div class="spice-levels">
+      <div class="spice-pill l1"><span class="flames">🌶️<span>🌶️</span><span>🌶️</span><span>🌶️</span></span> <span data-ar="هادي" data-en="Mild">Mild</span></div>
+      <div class="spice-pill l2"><span class="flames"><span class="on">🌶️</span><span class="on">🌶️</span>🌶️🌶️</span> <span data-ar="متوسط" data-en="Medium">Medium</span></div>
+      <div class="spice-pill l3"><span class="flames"><span class="on">🌶️</span><span class="on">🌶️</span><span class="on">🌶️</span>🌶️</span> <span data-ar="حار" data-en="Hot">Hot</span></div>
+      <div class="spice-pill l4"><span class="flames"><span class="on">🌶️</span><span class="on">🌶️</span><span class="on">🌶️</span><span class="on">🌶️</span></span> <span data-ar="نار" data-en="Fire">Fire</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MENU ===================== -->
+<section class="section" id="menu">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow"><span class="dot"></span><span data-ar="القائمة" data-en="The Menu">The Menu</span></div>
+        <h2 class="section-title" data-ar="اختار وجبتك" data-en="Build your order">Build your order</h2>
+      </div>
+      <p class="section-desc" data-ar="من البرجر للوجبات العائلية، كل حاجة بتتقلى فريش وقت ما تطلب." data-en="From burgers to family buckets — everything is fried fresh the moment you order.">From burgers to family buckets — everything is fried fresh the moment you order.</p>
+    </div>
+
+    <div class="menu-tabs" id="menuTabs">
+      <button class="menu-tab active" data-cat="all" data-ar="الكل" data-en="All">All</button>
+      <button class="menu-tab" data-cat="burgers" data-ar="برجر" data-en="Burgers">Burgers</button>
+      <button class="menu-tab" data-cat="buckets" data-ar="وجبات" data-en="Buckets">Buckets</button>
+      <button class="menu-tab" data-cat="sides" data-ar="إضافات" data-en="Sides">Sides</button>
+      <button class="menu-tab" data-cat="drinks" data-ar="مشروبات" data-en="Drinks">Drinks</button>
+    </div>
+
+    <div class="menu-grid" id="menuGrid"></div>
+  </div>
+</section>
+
+<!-- ===================== ABOUT ===================== -->
+<section class="section" id="about">
+  <div class="container about">
+    <div class="about-img">
+      <img id="aboutImg" alt="Restaurant kitchen" src="">
+    </div>
+    <div class="about-text">
+      <div class="eyebrow"><span class="dot"></span><span data-ar="حكايتنا" data-en="Our Story">Our Story</span></div>
+      <h2 class="section-title" style="margin-bottom:20px;" data-ar="بدأنا بمقلاة واحدة وحلم كبير" data-en="We started with one fryer and a big dream">We started with one fryer and a big dream</h2>
+      <p data-ar="من سنة 2018، بدأنا في مطبخ صغير بوصفة جدتنا للتتبيلة. النهاردة بقينا أكتر من مطعم — إحنا تجربة. كل قطعة دجاج بتتقلى بعناية، وكل صوص بيتعمل يومياً في المطبخ."
+         data-en="Since 2018, we started in a tiny kitchen with grandma's spice recipe. Today we're more than a restaurant — we're an experience. Every piece of chicken is fried with care, every sauce made fresh daily in-house.">
+        Since 2018, we started in a tiny kitchen with grandma's spice recipe. Today we're more than a restaurant — we're an experience. Every piece of chicken is fried with care, every sauce made fresh daily in-house.
+      </p>
+      <p data-ar="مفيش حاجة مجمدة، مفيش اختصارات. بس زيت نظيف، تتبيلة سرية، ونار صح."
+         data-en="No frozen shortcuts, ever. Just clean oil, secret spice, and the right amount of fire.">
+        No frozen shortcuts, ever. Just clean oil, secret spice, and the right amount of fire.
+      </p>
+      <div class="about-stats">
+        <div class="stat-box"><b>7+</b><span data-ar="سنين خبرة" data-en="Years of fire">Years of fire</span></div>
+        <div class="stat-box"><b>50K+</b><span data-ar="طبق اتقدم" data-en="Plates served">Plates served</span></div>
+        <div class="stat-box"><b>12</b><span data-ar="فرع" data-en="Locations">Locations</span></div>
+        <div class="stat-box"><b>100%</b><span data-ar="طازة يومياً" data-en="Fresh daily">Fresh daily</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONTACT ===================== -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow"><span class="dot"></span><span data-ar="تواصل" data-en="Get in touch">Get in touch</span></div>
+        <h2 class="section-title" data-ar="عندك سؤال؟ احنا هنا" data-en="Questions? We've got you">Questions? We've got you</h2>
+      </div>
+    </div>
+
+    <div class="contact-wrap">
+      <div class="contact-card">
+        <h3 style="font-size:1.2rem; font-weight:800; margin-bottom:4px;" data-ar="بيانات التواصل" data-en="Contact details">Contact details</h3>
+        <ul class="contact-list">
+          <li>
+            <div class="contact-ico">📍</div>
+            <div><b data-ar="العنوان" data-en="Address">Address</b><span data-ar="القــــــــاهــــرة" data-en="C A I R O">C A I R O</span></div>
+          </li>
+          <li>
+            <div class="contact-ico">📞</div>
+            <div><b data-ar="اتصل بينا" data-en="Call us">Call us</b><span>+20 103 541 9531</span></div>
+          </li>
+          <li>
+            <div class="contact-ico">⏰</div>
+            <div><b data-ar="مواعيد العمل" data-en="Hours">Hours</b><span data-ar="يومياً ١٢ ظهراً – ٢ فجراً" data-en="Daily 12 PM – 2 AM">Daily 12 PM – 2 AM</span></div>
+          </li>
+          <li>
+            <div class="contact-ico">✉️</div>
+            <div><b data-ar="إيميل" data-en="Email">Email</b><span>hello@narwtawabel.com</span></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="contact-card">
+        <h3 style="font-size:1.2rem; font-weight:800; margin-bottom:18px;" data-ar="ابعتلنا رسالة" data-en="Send a message">Send a message</h3>
+        <form id="contactForm" onsubmit="return false;">
+          <div class="form-group">
+            <label data-ar="الاسم" data-en="Name">Name</label>
+            <input type="text" required placeholder="..." />
+          </div>
+          <div class="form-group">
+            <label data-ar="رقم الموبايل" data-en="Phone">Phone</label>
+            <input type="tel" required placeholder="01xxxxxxxxx" />
+          </div>
+          <div class="form-group">
+            <label data-ar="الرسالة" data-en="Message">Message</label>
+            <textarea required placeholder="..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="contactSubmitBtn">
+            <span data-ar="إرسال" data-en="Send">Send</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="flame">🔥</div>
+          <div>
+            <span data-ar="نار & توابل" data-en="Nar & Spice">Nar & Spice</span>
+ 
+          </div>
+        </div>
+        <p data-ar="مطعم فرايد تشكن بطعم مختلف. كل قطعة بتحكي حكاية نار وتوابل." data-en="A fried chicken joint with a different story. Every piece tells a tale of fire and spice.">A fried chicken joint with a different story. Every piece tells a tale of fire and spice.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-ar="روابط" data-en="Links">Links</h4>
+        <ul>
+          <li><a href="#home" data-ar="الرئيسية" data-en="Home">Home</a></li>
+          <li><a href="#menu" data-ar="القائمة" data-en="Menu">Menu</a></li>
+          <li><a href="#about" data-ar="من نحن" data-en="About">About</a></li>
+          <li><a href="#contact" data-ar="تواصل" data-en="Contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-ar="تابعنا" data-en="Follow">Follow</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+               <div class="footer-bottom">
+      <span data-ar="© 2026 نار & توابل. جميع الحقوق محفوظة." data-en="© 2026 Nar & Spice. All rights reserved.">© 2026 Nar & Spice. All rights reserved.</span>
+      
+      <!-- 👈 السطر الجديد اللي هنضيفه هنا -->
+      <span class="dev-credit">
+        <span data-ar="تم تطوير الموقع بواسطة" data-en="Developed by">Developed by</span>
+        <a href="https://joeadvertiseeg.vercel.app/" target="_blank" rel="noopener noreferrer">Joe Advertise</a>
+      </span>
+
+      <span data-ar="صُنع بشغف وفلفل حار 🌶️" data-en="Made with passion & hot pepper 🌶️">Made with passion & hot pepper 🌶️</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===================== CART DRAWER ===================== -->
+<div class="overlay" id="overlay"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart">
+  <div class="cart-head">
+    <h3 data-ar="سلتك" data-en="Your cart">Your cart</h3>
+    <button class="cart-close" id="cartCloseBtn" aria-label="Close cart">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-summary">
+    <div class="summary-row"><span data-ar="المجموع الفرعي" data-en="Subtotal">Subtotal</span><span id="subtotalVal">0 EGP</span></div>
+    <div class="summary-row"><span data-ar="التوصيل" data-en="Delivery">Delivery</span><span id="deliveryVal">0 EGP</span></div>
+    <div class="summary-row total"><span data-ar="الإجمالي" data-en="Total">Total</span><span id="totalVal">0 EGP</span></div>
+    <button class="checkout-btn" id="checkoutBtn" disabled>
+      <span data-ar="إتمام الطلب" data-en="Checkout">Checkout</span> →
+    </button>
+  </div>
+</aside>
+
+<!-- ===================== CHECKOUT MODAL ===================== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="modalCloseBtn">✕</button>
+
+    <!-- الشاشة (1): اختيار طريقة الطلب -->
+    <div id="orderMethodView">
+      <h3 data-ar="اختر طريقة الطلب" data-en="Choose Order Method">Choose Order Method</h3>
+      <p class="modal-sub" data-ar="كيف تفضل إرسال ومتابعة طلبك؟" data-en="How would you like to send your order?">How would you like to send your order?</p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 20px;">
+        
+        <!-- خيار الواتساب (شفاف بالكامل) -->
+        <button class="btn method-btn hover-glow-wa" id="chooseWaBtn">
+          <div style="display: flex; align-items: center; gap: 16px; width: 100%;">
+            <!-- لوجو واتساب الرسمي -->
+<svg width="34" height="34" viewBox="0 0 24 24" fill="#25D366" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+              <path d="M12.012 2C6.466 2 1.96 6.486 1.956 12.015c0 1.767.458 3.492 1.332 5.012L2 22l5.127-1.337c1.464.799 3.125 1.22 4.88 1.22h.004c5.546 0 10.052-4.486 10.056-10.015A9.97 9.97 0 0019.124 4.93a9.92 9.92 0 00-7.112-2.93zm0 18.232h-.004a8.318 8.318 0 01-4.24-1.162l-.304-.18-3.155.827.842-3.076-.198-.315a8.27 8.27 0 01-1.272-4.43c.003-4.595 3.74-8.332 8.337-8.332 2.226 0 4.316.868 5.888 2.443a8.27 8.27 0 012.44 5.891c-.003 4.594-3.74 8.334-8.334 8.334zm4.568-6.225c-.25-.125-1.482-.732-1.712-.816-.23-.083-.398-.125-.565.125-.167.25-.648.816-.795.983-.146.167-.294.187-.544.062-.25-.125-1.058-.39-2.015-1.242-.745-.663-1.247-1.483-1.394-1.733-.146-.25-.015-.385.11-.51.112-.113.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.02-.438-.063-.125-.566-1.355-.776-1.855-.205-.487-.413-.42-.566-.428l-.483-.008c-.167 0-.44.062-.67.313-.23.25-.877.855-.877 2.085s.898 2.418 1.023 2.585c.125.167 1.765 2.693 4.276 3.778.598.258 1.065.412 1.43.528.6.19 1.144.163 1.572.099.482-.072 1.482-.605 1.692-1.19.21-.585.21-1.085.147-1.19-.063-.105-.23-.167-.48-.292z"/>
+            </svg>
+            <div style="flex: 1; text-align: start;">
+              <b style="display: block; font-size: 1.05rem; color: var(--cream);" data-ar="أكمل الطلب عبر واتساب" data-en="Order via WhatsApp">أكمل الطلب عبر واتساب</b>
+              <span style="font-size: 0.8rem; color: var(--cream-dim);" data-ar="سيتم فتح شات واتساب برسالة جاهزة لإرسالها" data-en="Opens WhatsApp with a ready-to-send message">سيتم فتح شات واتساب برسالة جاهزة لإرسالها</span>
+            </div>
+          </div>
+        </button>
+
+        <!-- خيار الأوتوماتيك (شفاف بالكامل) -->
+        <button class="btn method-btn hover-glow-auto" id="chooseAutoBtn">
+          <div style="display: flex; align-items: center; gap: 16px; width: 100%;">
+            <span style="font-size: 2rem; flex-shrink: 0; line-height: 1; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px;">⚡</span>
+            <div style="flex: 1; text-align: start;">
+              <b style="display: block; font-size: 1.05rem; color: var(--cream);" data-ar="أكمل الطلب أوتوماتيكياً" data-en="Automatic Order">أكمل الطلب أوتوماتيكياً</b>
+              <span style="font-size: 0.8rem; color: var(--cream-dim);" data-ar="إرسال فوري ومباشر لنظام المطعم دون الخروج من الموقع" data-en="Direct instant order without leaving the site">إرسال فوري ومباشر لنظام المطعم دون الخروج من الموقع</span>
+            </div>
+          </div>
+        </button>
+
+      </div>
+    </div>
+    <!-- الشاشة (2): إدخال البيانات -->
+    <div id="checkoutFormView" style="display: none;">
+      <h3 data-ar="إتمام الطلب" data-en="Checkout">Checkout</h3>
+      <p class="modal-sub" id="formSubtitle" data-ar="هنحتاج بياناتك عشان نوصلك الطلب" data-en="We just need a few details to get your order moving">We just need a few details to get your order moving</p>
+
+      <div class="form-group">
+        <label data-ar="الاسم بالكامل" data-en="Full name">Full name</label>
+        <input type="text" id="custName" placeholder="اسم الطلب" />
+      </div>
+      <div class="form-group">
+        <label data-ar="رقم الموبايل" data-en="Phone number">Phone number</label>
+        <input type="tel" id="custPhone" placeholder="01xxxxxxxxx" />
+      </div>
+      <div class="form-group">
+        <label data-ar="العنوان" data-en="Delivery address">Delivery address</label>
+        <input type="text" id="custAddress" placeholder="العنوان" />
+      </div>
+
+      <label style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:8px; color:var(--cream-dim);" data-ar="طريقة الدفع" data-en="Payment method">Payment method</label>
+      <div class="radio-group">
+        <div class="radio-opt selected" data-pay="cash">
+          <span data-ar="💵 كاش عند الاستلام" data-en="💵 Cash on delivery">💵 Cash on delivery</span>
+        </div>
+        <div class="radio-opt" data-pay="card">
+          <span data-ar="💳 بطاقة" data-en="💳 Card">💳 Card</span>
+        </div>
+      </div>
+
+      <button class="checkout-btn" id="confirmOrderBtn">
+        <span id="confirmBtnText" data-ar="تأكيد الطلب" data-en="Confirm order">Confirm order</span> 🔥
+      </button>
+      
+      <button id="backToMethodBtn" style="background: none; border: none; color: var(--cream-dim); width: 100%; margin-top: 12px; text-decoration: underline; font-size: 0.85rem; cursor: pointer;">
+        <span data-ar="→ الرجوع لاختيار طريقة الطلب" data-en="← Back to order methods">→ الرجوع لاختيار طريقة الطلب</span>
+      </button>
+    </div>
+
+    <!-- الشاشة (3): شاشة النجاح -->
+    <div class="success-view" id="successView">
+      <div class="ico">✅</div>
+      <h3 data-ar="تم إرسال طلبك بنجاح!" data-en="Order sent successfully!">Order sent successfully!</h3>
+      <p id="successMsgText" data-ar="تم استلام طلبك في نظام المطعم وسنتواصل معك قريباً للتوصيل." data-en="We received your order and will contact you soon for delivery.">We received your order and will contact you soon for delivery.</p>
+      <div class="order-id" id="orderIdVal">#NT-0000</div>
+      <p data-ar="التوصيل خلال 25-35 دقيقة تقريباً." data-en="Delivery takes around 25–35 minutes.">Delivery takes around 25–35 minutes.</p>
+      <button class="btn btn-primary" id="closeSuccessBtn" style="margin-top:18px; width:100%; justify-content:center;">
+        <span data-ar="تمام" data-en="Got it">Got it</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+<div class="toast" id="toast">✓ <span id="toastText"></span></div>
+<!-- مكتبات Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// إعدادات Firebase للموقع
+const firebaseConfig = {
+  apiKey: "AIzaSyAD8XEkgwId6rYr9j-iengayu92MObOz44",
+  authDomain: "nar-and-spice-db.firebaseapp.com",
+  projectId: "nar-and-spice-db",
+  storageBucket: "nar-and-spice-db.firebasestorage.app",
+  messagingSenderId: "730387083482",
+  appId: "1:730387083482:web:f19e20064ee188bc1775e3",
+  measurementId: "G-FGJP5TR7YQ"
+};
+
+// تشغيل Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+/* ============================================================
+   DATA
+============================================================ */
+const MENU = [
+  {
+    id:'b1', cat:'burgers', spice:2, badge:{ar:'الأكثر طلباً', en:'Best Seller'},
+    name:{ar:'برجر فاير كرسبي', en:'Fire Crispy Burger'},
+    desc:{ar:'فيليه دجاج مقرمش، جبنة شيدر، صوص فاير سري، خس وطماطم.', en:'Crispy chicken fillet, cheddar, secret fire sauce, lettuce & tomato.'},
+    price:145,
+    img:'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=500&q=80'
+  },
+  {
+    id:'b2', cat:'burgers', spice:1,
+    name:{ar:'برجر كلاسيك تشيز', en:'Classic Cheese Burger'},
+    desc:{ar:'فيليه دجاج مقلي ذهبي مع جبنة وصوص رانش كريمي.', en:'Golden fried chicken fillet with cheese and creamy ranch sauce.'},
+    price:130,
+    img:'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500&q=80'
+  },
+  {
+    id:'b3', cat:'burgers', spice:4,
+    name:{ar:'برجر النار الجهنمي', en:'Inferno Burger'},
+    desc:{ar:'فيليه دجاج متبل بفلفل الجوست بيبر، صوص هابانيرو حار.', en:'Ghost-pepper marinated fillet, fiery habanero sauce.'},
+    price:155,
+    img:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80'
+  },
+  {
+    id:'k1', cat:'buckets', spice:2, badge:{ar:'عرض عائلي', en:'Family Deal'},
+    name:{ar:'وجبة عائلية - 8 قطع', en:'Family Bucket – 8 pcs'},
+    desc:{ar:'8 قطع دجاج مقرمش، بطاطس كبيرة، 2 صوص، 2 مشروب.', en:'8 crispy chicken pieces, large fries, 2 dips, 2 drinks.'},
+    price:380,
+    img:'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=500&q=80'
+  },
+  {
+    id:'k2', cat:'buckets', spice:3,
+    name:{ar:'وجبة سولو سبايسي', en:'Solo Spicy Box'},
+    desc:{ar:'4 قطع دجاج حار، بطاطس صغيرة، صوص واحد، مشروب.', en:'4 spicy chicken pieces, small fries, one dip, drink.'},
+    price:175,
+    img:'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80'
+  },
+  {
+    id:'k3', cat:'buckets', spice:1,
+    name:{ar:'تندرز كومبو', en:'Tenders Combo'},
+    desc:{ar:'5 قطع تندرز مقرمشة، بطاطس، صوص هني مسترد.', en:'5 crispy chicken tenders, fries, honey mustard dip.'},
+    price:160,
+    img:'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&q=80'
+  },
+  {
+    id:'s1', cat:'sides', spice:0,
+    name:{ar:'بطاطس مقرمشة', en:'Crispy Fries'},
+    desc:{ar:'بطاطس مقلية ذهبية مع رشة بهارات خاصة.', en:'Golden fries tossed in our house spice blend.'},
+    price:45,
+    img:'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80'
+  },
+  {
+    id:'s2', cat:'sides', spice:1,
+    name:{ar:'حلقات بصل مقرمشة', en:'Crispy Onion Rings'},
+    desc:{ar:'حلقات بصل مقرمشة مع صوص باربكيو.', en:'Crunchy onion rings with smoky BBQ dip.'},
+    price:50,
+    img:'https://images.unsplash.com/photo-1639024471283-03518883512d?w=500&q=80'
+  },
+  {
+    id:'s3', cat:'sides', spice:0,
+    name:{ar:'سلطة كول سلو', en:'Coleslaw Salad'},
+    desc:{ar:'سلطة كرنب طازة بصوص كريمي خفيف.', en:'Fresh cabbage slaw in a light creamy dressing.'},
+    price:35,
+    img:'https://images.unsplash.com/photo-1625944230945-1b7dd3b949ab?w=500&q=80'
+  },
+  {
+    id:'d1', cat:'drinks', spice:0,
+    name:{ar:'بيبسي', en:'Pepsi'},
+    desc:{ar:'مشروب غازي بارد 330 مل.', en:'Chilled soft drink, 330ml can.'},
+    price:25,
+    img:'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&q=80'
+  },
+  {
+    id:'d2', cat:'drinks', spice:0,
+    name:{ar:'ليموناضة فريش', en:'Fresh Lemonade'},
+    desc:{ar:'عصير ليمون طازة بالنعناع.', en:'Freshly squeezed lemonade with mint.'},
+    price:38,
+    img:'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=500&q=80'
+  },
+  {
+    id:'d3', cat:'drinks', spice:0,
+    name:{ar:'ميلك شيك فانيليا', en:'Vanilla Milkshake'},
+    desc:{ar:'ميلك شيك كريمي بنكهة الفانيليا الطبيعية.', en:'Creamy milkshake with natural vanilla flavor.'},
+    price:55,
+    img:'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&q=80'
+  }
+];
+
+const DELIVERY_FEE = 25;
+const RESTAURANT_WHATSAPP = '201035419531'; // رقم واتساب المطعم (بالكود الدولي، بدون + أو أصفار)
+
+/* ============================================================
+   STATE (تم تغيير اللغة الافتراضية لـ en)
+============================================================ */
+let lang = 'en'; 
+let activeCat = 'all';
+let cart = {}; // id -> qty
+
+/* ============================================================
+   LANGUAGE
+============================================================ */
+const langToggle = document.getElementById('langToggle');
+const langToggleText = document.getElementById('langToggleText');
+
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.body.classList.toggle('lang-en', lang === 'en');
+  langToggleText.textContent = lang === 'ar' ? 'EN' : 'ع';
+
+  document.querySelectorAll('[data-ar][data-en]').forEach(el=>{
+    el.textContent = el.getAttribute(lang === 'ar' ? 'data-ar' : 'data-en');
+  });
+  document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(()=>{});
+
+  renderMenu();
+  renderCart();
+}
+
+langToggle.addEventListener('click', ()=>{
+  lang = lang === 'ar' ? 'en' : 'ar';
+  applyLang();
+});
+
+/* ============================================================
+   MOBILE NAV (SIDEBAR DRAWER)
+============================================================ */
+const burgerToggle = document.getElementById('burgerToggle');
+const navLinks = document.getElementById('navLinks');
+const navOverlay = document.getElementById('navOverlay');
+const navCloseBtn = document.getElementById('navCloseBtn');
+
+function openNav() {
+  navLinks.classList.add('open');
+  if(navOverlay) navOverlay.classList.add('show');
+  document.body.style.overflow = 'hidden'; // منع سكرول الموقع والقائمة مفتوحة
+}
+
+function closeNav() {
+  navLinks.classList.remove('open');
+  if(navOverlay) navOverlay.classList.remove('show');
+  document.body.style.overflow = ''; // تشغيل السكرول تاني
+}
+
+if(burgerToggle) burgerToggle.addEventListener('click', openNav);
+if(navCloseBtn) navCloseBtn.addEventListener('click', closeNav);
+if(navOverlay) navOverlay.addEventListener('click', closeNav);
+
+// إغلاق القائمة لما العميل يضغط على أي رابط ينتقل بيه
+navLinks.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', closeNav);
+});
+
+/* ============================================================
+   HERO / ABOUT IMAGES
+============================================================ */
+document.getElementById('heroImg').src = MENU[0].img.replace('w=500','w=900');
+document.getElementById('aboutImg').src = 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=800&q=80';
+
+/* ============================================================
+   MENU RENDER
+============================================================ */
+const menuGrid = document.getElementById('menuGrid');
+const menuTabs = document.getElementById('menuTabs');
+
+function flameHtml(level){
+  let html = '<span class="menu-card-flames">';
+  for(let i=1;i<=4;i++){
+    html += `<span class="${i<=level?'on':''}">🌶️</span>`;
+  }
+  html += '</span>';
+  return html;
+}
+
+function renderMenu(){
+  const items = activeCat === 'all' ? MENU : MENU.filter(m=>m.cat===activeCat);
+  menuGrid.innerHTML = items.map(item=>{
+    const inCart = !!cart[item.id];
+    return `
+    <div class="menu-card">
+      <div class="menu-card-img">
+        <img src="${item.img}" alt="${item.name[lang]}" loading="lazy">
+        ${item.badge ? `<span class="menu-card-badge">${item.badge[lang]}</span>` : ''}
+      </div>
+      <div class="menu-card-body">
+        <div class="menu-card-top">
+          <span class="menu-card-name">${item.name[lang]}</span>
+          <span class="menu-card-price">${item.price} ${lang==='ar'?'ج.م':'EGP'}</span>
+        </div>
+        ${flameHtml(item.spice)}
+        <p class="menu-card-desc">${item.desc[lang]}</p>
+        <button class="add-btn ${inCart?'added':''}" data-id="${item.id}">
+          ${inCart ? (lang==='ar'?`✓ في السلة (${cart[item.id]})`:`✓ In cart (${cart[item.id]})`) : (lang==='ar'?'+ أضف للسلة':'+ Add to cart')}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  menuGrid.querySelectorAll('.add-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> addToCart(btn.dataset.id));
+  });
+}
+
+menuTabs.querySelectorAll('.menu-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    menuTabs.querySelectorAll('.menu-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    activeCat = tab.dataset.cat;
+    renderMenu();
+  });
+});
+
+/* ============================================================
+   CART LOGIC
+============================================================ */
+const cartDrawer = document.getElementById('cartDrawer');
+const overlay = document.getElementById('overlay');
+const cartItemsEl = document.getElementById('cartItems');
+const cartCountEl = document.getElementById('cartCount');
+const subtotalVal = document.getElementById('subtotalVal');
+const deliveryVal = document.getElementById('deliveryVal');
+const totalVal = document.getElementById('totalVal');
+const checkoutBtn = document.getElementById('checkoutBtn');
+
+function moneyFmt(n){
+  return `${n} ${lang==='ar'?'ج.م':'EGP'}`;
+}
+
+function getItem(id){ return MENU.find(m=>m.id===id); }
+
+function addToCart(id){
+  cart[id] = (cart[id]||0) + 1;
+  renderMenu();
+  renderCart();
+  bumpCount();
+  showToast(lang==='ar' ? `تمت إضافة ${getItem(id).name.ar}` : `Added ${getItem(id).name.en}`);
+}
+
+function changeQty(id, delta){
+  if(!cart[id]) return;
+  cart[id] += delta;
+  if(cart[id] <= 0) delete cart[id];
+  renderMenu();
+  renderCart();
+}
+
+function removeItem(id){
+  delete cart[id];
+  renderMenu();
+  renderCart();
+}
+
+function bumpCount(){
+  cartCountEl.classList.remove('bump');
+  void cartCountEl.offsetWidth;
+  cartCountEl.classList.add('bump');
+}
+
+function cartTotals(){
+  let subtotal = 0, count = 0;
+  Object.entries(cart).forEach(([id,qty])=>{
+    const item = getItem(id);
+    if(item){ subtotal += item.price * qty; count += qty; }
+  });
+  const delivery = subtotal > 0 ? DELIVERY_FEE : 0;
+  return { subtotal, delivery, total: subtotal + delivery, count };
+}
+
+function renderCart(){
+  const { subtotal, delivery, total, count } = cartTotals();
+  cartCountEl.textContent = count;
+
+  if(count === 0){
+    cartItemsEl.innerHTML = `
+      <div class="cart-empty">
+        <div class="ico">🍗</div>
+        <b data-ar="السلة فاضية" data-en="Your cart is empty">${lang==='ar'?'السلة فاضية':'Your cart is empty'}</b>
+        <span style="font-size:0.85rem;">${lang==='ar'?'ضيف أكلة لذيذة وابدأ الطلب':'Add something delicious to get started'}</span>
+      </div>`;
+    checkoutBtn.disabled = true;
+  } else {
+    cartItemsEl.innerHTML = Object.entries(cart).map(([id,qty])=>{
+      const item = getItem(id);
+      if(!item) return '';
+      return `
+      <div class="cart-item">
+        <img src="${item.img}" alt="${item.name[lang]}">
+        <div class="cart-item-info">
+          <b>${item.name[lang]}</b>
+          <span class="cart-item-price">${moneyFmt(item.price)}</span>
+          <div class="cart-item-row">
+            <div class="qty-ctrl">
+              <button data-act="dec" data-id="${id}" aria-label="Decrease">−</button>
+              <span>${qty}</span>
+              <button data-act="inc" data-id="${id}" aria-label="Increase">+</button>
+            </div>
+            <button class="remove-btn" data-act="rm" data-id="${id}">${lang==='ar'?'حذف':'Remove'}</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    checkoutBtn.disabled = false;
+  }
+
+  subtotalVal.textContent = moneyFmt(subtotal);
+  deliveryVal.textContent = moneyFmt(delivery);
+  totalVal.textContent = moneyFmt(total);
+
+  cartItemsEl.querySelectorAll('[data-act]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.id;
+      if(btn.dataset.act==='inc') changeQty(id, 1);
+      if(btn.dataset.act==='dec') changeQty(id, -1);
+      if(btn.dataset.act==='rm') removeItem(id);
+    });
+  });
+}
+
+function openCart(){
+  cartDrawer.classList.add('open');
+  overlay.classList.add('show');
+}
+function closeCart(){
+  cartDrawer.classList.remove('open');
+  overlay.classList.remove('show');
+}
+
+document.getElementById('cartOpenBtn').addEventListener('click', openCart);
+document.getElementById('cartCloseBtn').addEventListener('click', closeCart);
+overlay.addEventListener('click', ()=>{ closeCart(); closeModal(); });
+
+/* ============================================================
+   TOAST
+============================================================ */
+const toast = document.getElementById('toast');
+const toastText = document.getElementById('toastText');
+let toastTimer;
+function showToast(msg){
+  toastText.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> toast.classList.remove('show'), 2200);
+}
+
+/* ============================================================
+   CHECKOUT MODAL
+============================================================ */
+const modalOverlay = document.getElementById('modalOverlay');
+let selectedOrderMethod = 'auto'; // هتشيل قيمة 'wa' أو 'auto'
+const checkoutFormView = document.getElementById('checkoutFormView');
+const successView = document.getElementById('successView');
+let selectedPay = 'cash';
+
+document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+  if(checkoutBtn.disabled) return;
+  modalOverlay.classList.add('show');
+  
+  // نظهر شاشة الاختيار ونخفي الفورم وشاشة النجاح
+  document.getElementById('orderMethodView').style.display = 'block';
+  checkoutFormView.style.display = 'none';
+  successView.classList.remove('show');
+});
+// لو اختار واتساب
+document.getElementById('chooseWaBtn').addEventListener('click', () => {
+  selectedOrderMethod = 'wa';
+  document.getElementById('orderMethodView').style.display = 'none';
+  document.getElementById('checkoutFormView').style.display = 'block';
+  
+  // تحويل زرار التأكيد للأخضر الجريديانت (الشيك)
+  const confirmBtn = document.getElementById('confirmOrderBtn');
+  confirmBtn.style.background = 'linear-gradient(135deg, #25D366, #128C7E)';
+  confirmBtn.style.boxShadow = '0 10px 28px rgba(37, 211, 102, 0.35)';
+  
+  // إضافة لوجو واتساب أبيض
+const waLogo = `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin: 0 4px;"><path d="M12.012 2C6.466 2 1.96 6.486 1.956 12.015c0 1.767.458 3.492 1.332 5.012L2 22l5.127-1.337c1.464.799 3.125 1.22 4.88 1.22h.004c5.546 0 10.052-4.486 10.056-10.015A9.97 9.97 0 0019.124 4.93a9.92 9.92 0 00-7.112-2.93zm0 18.232h-.004a8.318 8.318 0 01-4.24-1.162l-.304-.18-3.155.827.842-3.076-.198-.315a8.27 8.27 0 01-1.272-4.43c.003-4.595 3.74-8.332 8.337-8.332 2.226 0 4.316.868 5.888 2.443a8.27 8.27 0 012.44 5.891c-.003 4.594-3.74 8.334-8.334 8.334zm4.568-6.225c-.25-.125-1.482-.732-1.712-.816-.23-.083-.398-.125-.565.125-.167.25-.648.816-.795.983-.146.167-.294.187-.544.062-.25-.125-1.058-.39-2.015-1.242-.745-.663-1.247-1.483-1.394-1.733-.146-.25-.015-.385.11-.51.112-.113.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.02-.438-.063-.125-.566-1.355-.776-1.855-.205-.487-.413-.42-.566-.428l-.483-.008c-.167 0-.44.062-.67.313-.23.25-.877.855-.877 2.085s.898 2.418 1.023 2.585c.125.167 1.765 2.693 4.276 3.778.598.258 1.065.412 1.43.528.6.19 1.144.163 1.572.099.482-.072 1.482-.605 1.692-1.19.21-.585.21-1.085.147-1.19-.063-.105-.23-.167-.48-.292z"/></svg>`;  
+  const text = lang === 'ar' ? 'تأكيد عبر واتساب' : 'Confirm via WhatsApp';
+  confirmBtn.innerHTML = `<span id="confirmBtnText">${text}</span> ${waLogo}`;
+});
+
+// لو اختار أوتوماتيك
+document.getElementById('chooseAutoBtn').addEventListener('click', () => {
+  selectedOrderMethod = 'auto';
+  document.getElementById('orderMethodView').style.display = 'none';
+  document.getElementById('checkoutFormView').style.display = 'block';
+  
+  // إرجاع زرار التأكيد للونه الأصلي (الناري الجريديانت)
+  const confirmBtn = document.getElementById('confirmOrderBtn');
+  confirmBtn.style.background = ''; // هيرجع للـ CSS الأساسي
+  confirmBtn.style.boxShadow = '';
+  
+  const text = lang === 'ar' ? 'تأكيد وإرسال الطلب' : 'Confirm Order';
+  confirmBtn.innerHTML = `<span id="confirmBtnText">${text}</span> ⚡`;
+});
+
+// تشغيل زرار الرجوع
+document.getElementById('backToMethodBtn').addEventListener('click', () => {
+  document.getElementById('checkoutFormView').style.display = 'none';
+  document.getElementById('orderMethodView').style.display = 'block';
+});
+
+// لو اختار أوتوماتيك
+document.getElementById('chooseAutoBtn').addEventListener('click', () => {
+  selectedOrderMethod = 'auto';
+  document.getElementById('orderMethodView').style.display = 'none';
+  document.getElementById('checkoutFormView').style.display = 'block';
+  
+  // إرجاع زرار التأكيد للونه البرتقالي
+  const confirmBtn = document.getElementById('confirmOrderBtn');
+  confirmBtn.style.background = ''; 
+  confirmBtn.style.boxShadow = '';
+  confirmBtn.innerHTML = lang === 'ar' ? `تأكيد وإرسال الطلب ⚡` : `Confirm Order ⚡`;
+});
+
+// تشغيل زرار الرجوع
+document.getElementById('backToMethodBtn').addEventListener('click', () => {
+  document.getElementById('checkoutFormView').style.display = 'none';
+  document.getElementById('orderMethodView').style.display = 'block';
+});
+
+document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+function closeModal(){ modalOverlay.classList.remove('show'); }
+
+document.querySelectorAll('.radio-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+    selectedPay = opt.dataset.pay;
+  });
+});
+
+function buildWhatsAppMessage({orderId, name, phone, address, payLabel}){
+  const { subtotal, delivery, total } = cartTotals();
+
+  let lines = [];
+  
+  // استخدام مسافات صريحة لحماية الإيموجيز من تشويه واتساب ويب
+  lines.push(`🔥 *طلب جديد من مطعم نار & توابل* 🔥`);
+  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+  lines.push(`🔢  *رقم الطلب:* #${orderId}`);
+  lines.push(`⏰  *توقيت الطلب:* ${new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}`);
+  lines.push(``);
+  
+  lines.push(`🛒  *تفاصيل الأوردر:*`);
+  Object.entries(cart).forEach(([id, qty])=>{
+    const item = getItem(id);
+    if(!item) return;
+    lines.push(`🍗  ${item.name.ar} (×${qty}) ⟵ *${item.price * qty} ج.م*`);
+  });
+
+  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+  lines.push(`💵  *المجموع:* ${subtotal} ج.م`);
+  lines.push(`🛵  *خدمة التوصيل:* ${delivery} ج.م`);
+  lines.push(`💰  *الإجمالي المطلوب:* *${total} ج.م*`);
+  lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+  lines.push(``);
+  
+  lines.push(`📍  *بيانات التوصيل:*`);
+  lines.push(`👤  *الاسم:* ${name}`);
+  lines.push(`📞  *رقم الموبايل:* ${phone}`);
+  lines.push(`🏠  *العنوان:* ${address}`);
+  lines.push(`💳  *طريقة الدفع:* ${payLabel}`);
+  lines.push(``);
+
+  // دمج السطور برمز النزول لسطر جديد آمن للواتساب (\r\n)
+  return lines.join('\r\n');
+}
+document.getElementById('confirmOrderBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+
+  if(!name || !phone || !address){
+    showToast(lang==='ar' ? 'من فضلك املأ كل البيانات' : 'Please fill in all fields');
+    return;
+  }
+
+  // توليد رقم الطلب
+  let lastOrderNum = parseInt(localStorage.getItem('lastOrderNum')) || 1000;
+  lastOrderNum++;
+  localStorage.setItem('lastOrderNum', lastOrderNum); 
+  const orderId = 'NT-' + lastOrderNum;
+  const payLabel = selectedPay === 'cash' ? 'كاش عند الاستلام' : 'بطاقة';
+
+  // بناء الرسالة (دي الرسالة اللي هتتبعت للتليجرام وللواتساب)
+  const message = buildWhatsAppMessage({orderId, name, phone, address, payLabel});
+
+  // 1. إرسال أوتوماتيك للتليجرام (في الخلفية)
+  const TELEGRAM_TOKEN = '8892636097:AAHwaKcY9VdlJrFHqKTlRpNpeoHZpD4zvwk'; 
+  const CHAT_ID = '6822632384';
+  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+  });
+
+// بعد ما بعتنا التليجرام في الخلفية، نشوف العميل كان مختار إيه:
+  if (selectedOrderMethod === 'wa') {
+    // لو مختار واتساب: نفتحله الشات ونقفل المودال
+    const waUrl = `https://api.whatsapp.com/send?phone=${RESTAURANT_WHATSAPP}&text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+    closeModal();
+    showToast(lang === 'ar' ? '✓ تم تحويلك لواتساب' : '✓ Redirected to WhatsApp');
+  } else {
+    // لو مختار أوتوماتيك: نظهرله شاشة النجاح في الموقع
+    document.getElementById('orderIdVal').textContent = '#' + orderId;
+    checkoutFormView.style.display = 'none';
+    successView.classList.add('show');
+  }
+// 2. إرسال بيانات الطلب لقاعدة بيانات Firebase
+  const { total } = cartTotals(); 
+  
+  db.collection("orders").add({
+    orderNumber: lastOrderNum, 
+    customerName: name,        
+    customerPhone: phone,      
+    customerAddress: address,  
+    total: total,              
+    paymentMethod: selectedPay,
+    status: 'new',
+    orderDetails: message, // 👈 هنا ضفنا رسالة الطلب كاملة بنفس تفاصيل الواتساب
+    timestamp: Date.now()  // 👈 تعديل مهم جداً: استخدمنا وقت الجهاز لتجنب توقف اللوحة
+  }).then(() => {
+    console.log("تم حفظ الطلب بنجاح");
+  }).catch((error) => {
+    console.error("حدث خطأ: ", error);
+  });
+  // تصفير السلة
+  cart = {}; renderMenu(); renderCart();
+
+});
+
+document.getElementById('closeSuccessBtn').addEventListener('click', closeModal);
+
+/* ============================================================
+   CONTACT FORM (demo)
+============================================================ */
+document.getElementById('contactForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  showToast(lang==='ar' ? '✓ تم إرسال رسالتك' : '✓ Your message has been sent');
+  e.target.reset();
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+applyLang();
+</script>
+
+</body>
+</html>
